@@ -6,6 +6,7 @@ import dev.triumphteam.gui.guis.PaginatedGui;
 import mastrjimbo.itemsmith.engine.CustomItem;
 import mastrjimbo.itemsmith.gui.GuiManager;
 import mastrjimbo.itemsmith.util.Text;
+import mastrjimbo.itemsmith.gui.Icons;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -36,8 +37,7 @@ public final class ItemListScreen {
 
         for (String id : gui.registry().ids()) {
             CustomItem def = gui.registry().get(id);
-            Material icon = def != null && def.material().isItem() ? def.material() : Material.PAPER;
-            menu.addItem(PaperItemBuilder.from(icon)
+            menu.addItem(PaperItemBuilder.from(Icons.display(def))
                     .name(Text.item("<yellow>" + id))
                     .lore(describe(def))
                     .asGuiItem(event -> gui.edit(player, id)));

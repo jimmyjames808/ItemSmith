@@ -4,6 +4,7 @@ import dev.triumphteam.gui.builder.item.PaperItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import mastrjimbo.itemsmith.gui.EditSession;
 import mastrjimbo.itemsmith.gui.GuiManager;
+import mastrjimbo.itemsmith.gui.Icons;
 import mastrjimbo.itemsmith.gui.draft.ItemDraft;
 import mastrjimbo.itemsmith.gui.form.Forms;
 import mastrjimbo.itemsmith.gui.pick.RegistryValuePickerScreen;
@@ -13,6 +14,7 @@ import mastrjimbo.itemsmith.util.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ public final class ItemEditorScreen {
                 .asGuiItem(event -> {
                 }));
 
-        menu.setItem(3, 2, PaperItemBuilder.from(iconOf(draft))
+        menu.setItem(3, 2, PaperItemBuilder.from(draft.material())
                 .name(Text.item("<aqua>Material"))
                 .lore(List.of(Text.item("<gray>" + draft.material().getKey().getKey()),
                         Text.item("<green>Click to change")))
@@ -194,8 +196,8 @@ public final class ItemEditorScreen {
                 });
     }
 
-    private Material iconOf(ItemDraft draft) {
-        return draft.material().isItem() ? draft.material() : Material.PAPER;
+    private ItemStack iconOf(ItemDraft draft) {
+        return Icons.display(draft.material(), draft.itemModel(), draft.customModelData());
     }
 
     private List<Component> previewLore(ItemDraft draft) {

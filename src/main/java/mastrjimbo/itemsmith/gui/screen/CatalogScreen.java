@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.engine.CustomItem;
 import mastrjimbo.itemsmith.gui.GuiManager;
 import mastrjimbo.itemsmith.gui.form.Forms;
 import mastrjimbo.itemsmith.util.Text;
+import mastrjimbo.itemsmith.gui.Icons;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -49,8 +50,7 @@ public final class CatalogScreen {
                 continue;
             }
             shown++;
-            Material icon = def.material().isItem() ? def.material() : Material.PAPER;
-            menu.addItem(PaperItemBuilder.from(icon)
+            menu.addItem(PaperItemBuilder.from(Icons.display(def))
                     .name(nameComponent(def, id))
                     .lore(listLore(def))
                     .asGuiItem(event -> new ItemDetailScreen(gui, id, () -> open(player)).open(player)));

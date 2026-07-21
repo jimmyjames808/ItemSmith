@@ -5,6 +5,7 @@ import dev.triumphteam.gui.guis.Gui;
 import mastrjimbo.itemsmith.engine.CustomItem;
 import mastrjimbo.itemsmith.gui.GuiManager;
 import mastrjimbo.itemsmith.util.Text;
+import mastrjimbo.itemsmith.gui.Icons;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -44,9 +45,7 @@ public final class ItemDetailScreen {
                 .disableAllInteractions()
                 .create();
 
-        // Item preview: plain untagged material icon (never registry.build) carrying the item's own text.
-        Material icon = def.material().isItem() ? def.material() : Material.PAPER;
-        menu.setItem(2, 3, PaperItemBuilder.from(icon)
+        menu.setItem(2, 3, PaperItemBuilder.from(Icons.display(def))
                 .name(nameComponent(def))
                 .lore(itemLore(def))
                 .asGuiItem(event -> {
