@@ -7,7 +7,7 @@
 (`activator → conditions → targeter → actions`). The action list runs **top-to-bottom, once
 per resolved target**.
 
-There are **163 actions**. This page lists every one, grouped into buckets, with its key
+There are **~160 actions**. This page lists every one, grouped into buckets, with its key
 parameters — plus deeper coverage of the **flow-control** actions that let you nest, delay,
 loop and branch.
 
@@ -212,44 +212,45 @@ protection when the ability opts into [`respect-claims`](gates.md#region).
 
 Act on the caster, the triggering item, or the target entity's state.
 
-| id | Does | Params |
-|---|---|---|
-| `message` | Sends a MiniMessage chat message (to target if a player, else caster). | `text` |
-| `give_item` | Gives the caster a vanilla item. | `material`, `amount` |
-| `give_custom_item` | Gives the caster another ItemSmith item. | `item`, `amount` |
-| `drop_item` | Drops a vanilla item at the caster's feet. | `material`, `amount` |
-| `drop_custom_item` | Drops another ItemSmith item at the caster's feet. | `item`, `amount` |
-| `consume_item` | Removes a vanilla item from the caster's inventory. | `material`, `amount` |
-| `give_xp` | Grants the caster XP points. | `amount` |
-| `take_xp` | Removes XP points from the caster. | `amount` |
-| `set_level` | Sets the caster's XP level. | `level` |
-| `set_gamemode` | Switches the caster's game mode. | `mode` |
-| `set_respawn_point` | Sets the caster's respawn to their location. | — |
-| `set_compass_target` | Points the caster's compass at the target. | — |
-| `open_chest` | Opens a fresh 27-slot chest for the caster. | `title` |
-| `open_enderchest` | Opens the caster's ender chest. | — |
-| `open_workbench` | Opens a virtual crafting table. | — |
-| `close_inventory` | Closes the caster's open inventory. | — |
-| `swap_hands` | Swaps main-hand and off-hand items. | — |
-| `equip_slot` | Puts the triggering item into an armor slot. | `slot` |
-| `unequip_slot` | Clears an armor slot on the caster. | `slot` |
-| `set_item_name` | Renames the triggering item. | `name` |
-| `set_item_lore` | Replaces the triggering item's lore. | `lore` |
-| `add_lore_line` | Appends a line to the triggering item's lore. | `line` |
-| `clear_lore` | Clears the triggering item's lore. | — |
-| `set_item_model` | Sets the item's resource-pack model key. | `model` |
-| `set_custom_model_data` | Sets the item's custom model data. | `value` |
-| `add_enchant` | Adds an enchantment to the triggering item. | `enchant`, `level` |
-| `remove_enchant` | Removes an enchantment from the item. | `enchant` |
-| `clear_enchants` | Removes all enchantments from the item. | — |
-| `repair_item` | Fully repairs the triggering item. | — |
-| `damage_item` | Adds damage to the triggering item. | `amount` |
-| `modify_durability` | Adjusts the item's damage by a relative amount. | `amount` |
-| `set_item_cooldown` | Puts a material on the caster's native cooldown. | `material`, `ticks` |
-| `rename_entity` | Sets a visible custom name on the target. | `name` |
-| `set_baby` | Turns the target into a baby. | — |
-| `set_adult` | Turns the target into an adult. | — |
-| `shear_entity` | Shears the target sheep. | — |
+| id                      | Does                                                                   | Params |
+|-------------------------|------------------------------------------------------------------------|---|
+| `message`               | Sends a MiniMessage chat message (to target if a player, else caster). | `text` |
+| `give_item`             | Gives the caster a vanilla item.                                       | `material`, `amount` |
+| `give_custom_item`      | Gives the caster another ItemSmith item.                               | `item`, `amount` |
+| `drop_item`             | Drops a vanilla item at the caster's feet.                             | `material`, `amount` |
+| `drop_custom_item`      | Drops another ItemSmith item at the caster's feet.                     | `item`, `amount` |
+| `consume_item`          | Removes a vanilla item from the caster's inventory.                    | `material`, `amount` |
+| `give_xp`               | Grants the caster XP points.                                           | `amount` |
+| `drop_xp`               | Drops XP points at the targets location.                               | `amount` |
+| `take_xp`               | Removes XP points from the caster.                                     | `amount` |
+| `set_level`             | Sets the caster's XP level.                                            | `level` |
+| `set_gamemode`          | Switches the caster's game mode.                                       | `mode` |
+| `set_respawn_point`     | Sets the caster's respawn to their location.                           | — |
+| `set_compass_target`    | Points the caster's compass at the target.                             | — |
+| `open_chest`            | Opens a fresh 27-slot chest for the caster.                            | `title` |
+| `open_enderchest`       | Opens the caster's ender chest.                                        | — |
+| `open_workbench`        | Opens a virtual crafting table.                                        | — |
+| `close_inventory`       | Closes the caster's open inventory.                                    | — |
+| `swap_hands`            | Swaps main-hand and off-hand items.                                    | — |
+| `equip_slot`            | Puts the triggering item into an armor slot.                           | `slot` |
+| `unequip_slot`          | Clears an armor slot on the caster.                                    | `slot` |
+| `set_item_name`         | Renames the triggering item.                                           | `name` |
+| `set_item_lore`         | Replaces the triggering item's lore.                                   | `lore` |
+| `add_lore_line`         | Appends a line to the triggering item's lore.                          | `line` |
+| `clear_lore`            | Clears the triggering item's lore.                                     | — |
+| `set_item_model`        | Sets the item's resource-pack model key.                               | `model` |
+| `set_custom_model_data` | Sets the item's custom model data.                                     | `value` |
+| `add_enchant`           | Adds an enchantment to the triggering item.                            | `enchant`, `level` |
+| `remove_enchant`        | Removes an enchantment from the item.                                  | `enchant` |
+| `clear_enchants`        | Removes all enchantments from the item.                                | — |
+| `repair_item`           | Fully repairs the triggering item.                                     | — |
+| `damage_item`           | Adds damage to the triggering item.                                    | `amount` |
+| `modify_durability`     | Adjusts the item's damage by a relative amount.                        | `amount` |
+| `set_item_cooldown`     | Puts a material on the caster's native cooldown.                       | `material`, `ticks` |
+| `rename_entity`         | Sets a visible custom name on the target.                              | `name` |
+| `set_baby`              | Turns the target into a baby.                                          | — |
+| `set_adult`             | Turns the target into an adult.                                        | — |
+| `shear_entity`          | Shears the target sheep.                                               | — |
 
 ---
 

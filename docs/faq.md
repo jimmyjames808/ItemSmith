@@ -68,9 +68,9 @@ planned for later.)
 
 ### How complex can an item's abilities get?
 Very. An item can have **any number of abilities**, and each ability is a pipeline of
-**Activator → Conditions → Targeter → Actions** with an optional **Gate**. You get 150 activators,
-163 actions (including nested `delay` / `repeat` / `if` / `random` flow control), 73 conditions, and
-18 targeters to compose. There is **no one-ability limit**.
+**Activator → Conditions → Targeter → Actions** with an optional **Gate**. You get ~150 activators,
+~160 actions (including nested `delay` / `repeat` / `if` / `random` flow control), ~70 conditions, and
+~18 targeters to compose. There is **no one-ability limit**.
 
 ### Can I gate an item behind a rank, cost, or region?
 Yes. Abilities support **permission gates**, **world/region restriction** (WorldGuard), **per-use

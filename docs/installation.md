@@ -48,10 +48,10 @@ On first enable, ItemSmith:
 
 1. Registers its engine — you'll see a boot line reporting the component count, for example:
    ```
-   [ItemSmith] ItemSmith enabled: 2 item(s), 404 engine component(s).
+   [ItemSmith] ItemSmith enabled: 2 item(s), ~400 engine component(s).
    ```
-   The `404 engine component(s)` is the sum of all activators, conditions, targeters and
-   actions in this build (150 + 73 + 18 + 163). The item count is however many `*.yml` files
+   The `engine component(s)` count is the sum of all activators, conditions, targeters, and
+   actions in this build (around 400, and it grows as you add components). The item count is however many `*.yml` files
    it loaded.
 2. Logs which optional integrations it detected, for example:
    ```

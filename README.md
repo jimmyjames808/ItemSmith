@@ -28,8 +28,8 @@ share an item, every item is a clean, human-readable YAML file you can drop into
   native Paper dialog system — pick an activator, add conditions, choose a targeter, stack actions,
   set recipes and drops, all in-game. The GUI reads and writes the same YAML files, so GUI-built and
   hand-edited items are interchangeable.
-- **A genuinely deep engine.** ~400 building blocks: **150 activators**, **163 actions** (including
-  flow control — delay, repeat, if, random), **73 conditions**, and **18 targeters**. Compose them
+- **A genuinely deep engine.** ~400 building blocks: **~150 activators**, **~160 actions** (including
+  flow control — delay, repeat, if, random), **~70 conditions**, and **~18 targeters**. Compose them
   into as many abilities per item as you like.
 - **Share by file.** Items live at `plugins/ItemSmith/items/<id>.yml`. Copy a file to another server,
   `/itemsmith reload`, done.
@@ -83,7 +83,7 @@ also be built start-to-finish through the in-game creator.
 
 | Area | What you get |
 |------|--------------|
-| **Abilities** | 150 activators · 163 actions · 73 conditions · 18 targeters · nested flow control · unlimited abilities per item |
+| **Abilities** | ~150 activators · ~160 actions · ~70 conditions · ~18 targeters · nested flow control · unlimited abilities per item |
 | **In-game creator** | Chest GUI + native Paper dialogs; templates + blank start; categorized & searchable component pickers; immutable item id + "Save As"; reads/writes the same YAML |
 | **Obtaining** | Crafting (shaped, shapeless, furnace/blast/smoker/campfire, smithing, stonecutter — multiple recipes per item, vanilla recipe-book unlock); mob & block drops (chance, count, player-kill, silk-touch policy); loot-table injection (chests, mobs, fishing); player catalog GUI |
 | **Gating & economics** | Permission gates; world/region restriction (WorldGuard); use-cost via Vault (money / XP / items / hunger); charges & custom durability; consume-on-depletion; shared cooldown groups |

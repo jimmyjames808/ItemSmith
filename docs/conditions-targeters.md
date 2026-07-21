@@ -12,7 +12,7 @@ Two stages of the pipeline live here:
 
 # Conditions
 
-There are **73 conditions**. Add them under an ability's `conditions:` list; **all must pass**
+There are **~70 conditions**. Add them under an ability's `conditions:` list; **all must pass**
 (logical AND) for the ability to fire. An empty/absent list means "always fires".
 
 ```yaml
@@ -185,7 +185,7 @@ conditions:
 
 # Targeters
 
-There are **18 targeters**. The targeter resolves *which* targets the actions run against — the
+There are **~18 targeters**. The targeter resolves *which* targets the actions run against — the
 action list runs **once per resolved target**. Set it with `targeter:` on the ability; the
 default is `target`.
 

@@ -17,8 +17,8 @@ hand-editing a small YAML file or entirely in-game through a full chest-GUI crea
   soft-depends that unlock extra features when present and degrade gracefully when absent.
 - **A real in-game creator.** A complete chest-GUI item creator that reads and writes the
   *same* YAML files you can hand-edit.
-- **A deep, schema-driven engine.** ~404 building blocks (150 activators, 163 actions,
-  73 conditions, 18 targeters) that snap together into abilities. Nested flow control
+- **A deep, schema-driven engine.** ~400 building blocks (~150 activators, ~160 actions,
+  ~70 conditions, ~18 targeters) that snap together into abilities. Nested flow control
   (delay, repeat, if, random) lets you build timed combos and branching effects.
 
 ---
@@ -55,11 +55,11 @@ in-game GUI reads and writes the exact same file.
 ### Authoring items
 - **[YAML Reference](yaml-reference.md)** — the complete per-item schema: every top-level
   field, the ability pipeline, gate keys, and the reserved keys (`invert`, `cooldown`, …).
-- **[Activators](activators.md)** — the full categorized list of 150 triggers.
-- **[Actions](actions.md)** — the 163 actions by bucket, with the flow-control actions
+- **[Activators](activators.md)** — the full categorized list of ~150 triggers.
+- **[Actions](actions.md)** — the ~160 actions by bucket, with the flow-control actions
   (delay / repeat / if / random) and nested examples.
-- **[Conditions & Targeters](conditions-targeters.md)** — the 73 conditions (plus the
-  `invert` flag) and 18 targeters, with what each returns.
+- **[Conditions & Targeters](conditions-targeters.md)** — the ~70 conditions (plus the
+  `invert` flag) and ~18 targeters, with what each returns.
 - **[Gates & Economics](gates.md)** — permission, region, use-cost (money / XP / items /
   hunger), charges, custom durability, cooldown groups, and the bypass permissions.
 

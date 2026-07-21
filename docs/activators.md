@@ -7,7 +7,7 @@ An **activator** is the *trigger* of an ability — the event that makes it fire
 stage of the pipeline (`activator → conditions → targeter → actions`). Every activator listed
 here is backed by a real event handler, so there are no "dead" triggers.
 
-There are **150 activators**. Bind one by setting `activator:` on an ability:
+There are **~150 activators**. Bind one by setting `activator:` on an ability:
 
 ```yaml
 abilities:
