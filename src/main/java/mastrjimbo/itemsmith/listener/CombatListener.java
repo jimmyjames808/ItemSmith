@@ -2,6 +2,7 @@ package mastrjimbo.itemsmith.listener;
 
 import mastrjimbo.itemsmith.engine.AbilityEngine;
 import mastrjimbo.itemsmith.registry.Activators;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -30,6 +31,7 @@ public final class CombatListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onHit(EntityDamageByEntityEvent event) {
+        if (ActionDamage.inProgress()) return;
         if (!(event.getDamager() instanceof Player player)) return;
         ItemStack weapon = player.getInventory().getItemInMainHand();
         engine.fireItem(Activators.PLAYER_HIT_ENTITY, player, weapon, event, event.getEntity());

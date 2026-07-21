@@ -9,6 +9,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Visuals;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -142,7 +143,7 @@ public final class ShootProjectileAction implements Action {
 
                 for (Entity e : world.getNearbyEntities(head, hitRadius, hitRadius, hitRadius)) {
                     if (e instanceof LivingEntity le && !(e instanceof ArmorStand) && !e.equals(source)) {
-                        if (damage > 0) le.damage(damage, source);
+                        if (damage > 0) ActionDamage.deal(le, damage, ctx.player());
                         impact(ctx.plugin(), head, trail, trailHead, trailOwner);
                         // Run the item's projectile_hit_entity ability (if any) on the entity we hit —
                         // this is how a projectile "does stuff" beyond its built-in damage.

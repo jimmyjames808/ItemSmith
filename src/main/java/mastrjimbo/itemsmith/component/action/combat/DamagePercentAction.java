@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -43,7 +44,7 @@ public final class DamagePercentAction implements Action {
         double max = maxAttr != null ? maxAttr.getValue() : 20.0;
         double amount = percent * max;
         if (params.getBool("from_caster", true) && ctx.player() != null) {
-            living.damage(amount, ctx.player());
+            ActionDamage.deal(living, amount, ctx.player());
         } else {
             living.damage(amount);
         }

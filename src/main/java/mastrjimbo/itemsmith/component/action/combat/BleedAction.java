@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public final class BleedAction implements Action {
                     cancel();
                     return;
                 }
-                living.damage(damage, source);
+                ActionDamage.deal(living, damage, source);
             }
         }.runTaskTimer(ctx.plugin(), interval, interval);
     }

@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import mastrjimbo.itemsmith.util.TempTasks;
 import org.bukkit.entity.LivingEntity;
@@ -38,7 +39,7 @@ public final class DamageNoKnockbackAction implements Action {
         double amount = params.getDouble("amount", 4.0);
         if (amount <= 0) return;
         Vector v = living.getVelocity();
-        living.damage(amount, ctx.player());
+        ActionDamage.deal(living, amount, ctx.player());
         TempTasks.later(ctx.plugin(), 1, () -> {
             if (living.isValid()) living.setVelocity(v);
         });

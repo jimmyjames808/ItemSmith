@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import org.bukkit.entity.LivingEntity;
 
@@ -39,7 +40,7 @@ public final class DamageAction implements Action {
         double amount = params.getDouble("amount", 4.0);
         if (amount <= 0) return;
         if (params.getBool("from_caster", true) && ctx.player() != null) {
-            living.damage(amount, ctx.player());
+            ActionDamage.deal(living, amount, ctx.player());
         } else {
             living.damage(amount);
         }

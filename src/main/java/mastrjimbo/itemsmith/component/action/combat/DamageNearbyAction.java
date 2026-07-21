@@ -7,6 +7,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -42,7 +43,7 @@ public final class DamageNearbyAction implements Action {
         for (Entity e : loc.getWorld().getNearbyEntities(loc, radius, radius, radius)) {
             if (!(e instanceof LivingEntity living)) continue;
             if (!hitCaster && living.equals(ctx.player())) continue;
-            living.damage(amount, ctx.player());
+            ActionDamage.deal(living, amount, ctx.player());
         }
     }
 }

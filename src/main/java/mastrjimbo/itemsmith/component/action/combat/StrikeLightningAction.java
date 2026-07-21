@@ -8,6 +8,7 @@ import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
 import mastrjimbo.itemsmith.registry.Categories;
+import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Targets;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -61,7 +62,7 @@ public final class StrikeLightningAction implements Action {
         for (Entity e : loc.getWorld().getNearbyEntities(loc, LIGHTNING_RADIUS, LIGHTNING_RADIUS + 1, LIGHTNING_RADIUS)) {
             if (e instanceof LivingEntity le && !e.equals(caster)) {
                 le.setFireTicks(Math.max(le.getFireTicks(), 40));
-                le.damage(LIGHTNING_DAMAGE, caster);
+                ActionDamage.deal(le, LIGHTNING_DAMAGE, caster);
             }
         }
     }
