@@ -1,0 +1,35 @@
+package mastrjimbo.itemsmith.component.action.movement;
+
+import mastrjimbo.itemsmith.engine.AbilityContext;
+import mastrjimbo.itemsmith.engine.Action;
+import mastrjimbo.itemsmith.param.ParamDef;
+import mastrjimbo.itemsmith.param.ParamSchema;
+import mastrjimbo.itemsmith.param.ParamType;
+import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.registry.Categories;
+import org.bukkit.entity.Player;
+
+/** Sets the caster's flying speed, clamped to the vanilla-legal range. */
+public final class SetFlySpeedAction implements Action {
+
+    public static final String ID = "set_fly_speed";
+
+    private static final ParamSchema SCHEMA = ParamSchema.builder()
+            .add(ParamDef.of("speed", ParamType.DOUBLE, 0.1)
+                    .label("Speed").range(-1, 1).desc("Flying speed (-1 to 1; vanilla default is 0.1)."))
+            .build();
+
+    @Override public String id() { return ID; }
+    @Override public String category() { return Categories.MOVEMENT; }
+    @Override public String displayName() { return "Set Fly Speed"; }
+    @Override public String description() { return "Sets the caster's flying speed."; }
+    @Override public ParamSchema schema() { return SCHEMA; }
+
+    @Override
+    public void run(AbilityContext ctx, Object target, ParamValues params) {
+        Player player = ctx.player();
+        if (player == null) return;
+        double speed = params.getDouble("speed", 0.1);
+        player.setFlySpeed((float) Math.max(-1, Math.min(1, speed)));
+    }
+}

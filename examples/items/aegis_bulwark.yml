@@ -1,0 +1,97 @@
+# ============================================================
+#  Aegis Bulwark  —  wearable armor (chestplate)
+# ============================================================
+# SHOWS OFF:
+#   * The full armor lifecycle: EQUIP (announce + visuals), EQUIP_TICK
+#     (re-apply passive buffs every second while worn), and UNEQUIP
+#     (strip the buffs the moment you take it off).
+#   * A reactive defensive ability: when a mob hits you, there's a chance
+#     to retaliate — knock the attacker back and singe it — proving that
+#     take-damage triggers fire for WORN gear, not just held items.
+#
+# Get it once loaded with:  /itemsmith get aegis_bulwark
+# ============================================================
+
+material: NETHERITE_CHESTPLATE
+name: "<gradient:#b0bec5:#eceff1><bold>Aegis Bulwark</bold></gradient>"
+lore:
+  - "<gray>A bastion you wear. Standing ground made steel.</gray>"
+  - "<gray>While worn: <blue>Resistance</blue> + <gold>Fire Resistance</gold></gray>"
+  - "<gray>When struck: chance to <white>repel</white> the attacker</gray>"
+
+abilities:
+  # --- On equip: announce + flourish -------------------------------------
+  - activator: equip
+    targeter: self
+    actions:
+      - type: send_actionbar
+        text: "<aqua>Aegis online.</aqua>"
+      - type: play_sound
+        sound: block.beacon.activate
+        volume: 0.7
+        pitch: 1.4
+      - type: particle_ring
+        particle: end_rod
+        radius: 1.2
+        points: 30
+
+  # --- While worn: keep the passive buffs topped up (fires every 1s) -----
+  - activator: equip_tick
+    targeter: self
+    actions:
+      - type: potion_effect_self
+        effect: resistance
+        duration: 3
+        amplifier: 0
+      - type: potion_effect_self
+        effect: fire_resistance
+        duration: 3
+        amplifier: 0
+
+  # --- On unequip: strip the buffs immediately ---------------------------
+  - activator: unequip
+    targeter: self
+    actions:
+      - type: remove_effect
+        effect: resistance
+      - type: remove_effect
+        effect: fire_resistance
+      - type: send_actionbar
+        text: "<gray>Aegis offline.</gray>"
+      - type: play_sound
+        sound: block.beacon.deactivate
+        volume: 0.7
+        pitch: 0.8
+
+  # --- Reactive: repel attackers (worn-gear defense trigger) -------------
+  - activator: player_take_damage_by_entity
+    targeter: target
+    cooldown: 1
+    conditions:
+      - type: chance
+        chance: 0.4
+    actions:
+      - type: knockback
+        strength: 1.0
+        lift: 0.35
+      - type: damage
+        amount: 2
+        from_caster: true
+      - type: particle
+        particle: crit
+        count: 12
+        spread: 0.4
+      - type: play_sound
+        sound: item.shield.block
+        volume: 0.8
+        pitch: 1.0
+
+recipes:
+  - type: shaped
+    shape:
+      - "N N"
+      - "NDN"
+      - "NNN"
+    ingredients:
+      N: NETHERITE_INGOT
+      D: DIAMOND_BLOCK

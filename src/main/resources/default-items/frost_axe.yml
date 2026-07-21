@@ -1,0 +1,33 @@
+# ============================================================
+#  Frost Axe  —  an ItemSmith example item
+# ============================================================
+# Shows a shapeless recipe and a single on-hit effect with no bonus damage.
+# See venom_blade.yml for the full field reference.
+# ============================================================
+
+material: IRON_AXE
+name: "<gradient:#40c4ff:#e1f5fe>Frost Axe</gradient>"
+lore:
+  - "<gray>Chills foes to the bone.</gray>"
+abilities:
+  - activator: player_hit_entity
+    targeter: target
+    cooldown: 3
+    actions:
+      - type: potion_effect
+        effect: slowness
+        duration: 4
+        amplifier: 1   # Slowness II
+
+recipe:
+  type: shapeless
+  ingredients:
+    - IRON_AXE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE
+    - PACKED_ICE

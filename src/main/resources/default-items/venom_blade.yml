@@ -1,0 +1,46 @@
+# ============================================================
+#  Venom Blade  —  an ItemSmith example item
+# ============================================================
+# One item per file. The file name (venom_blade) is the item id; give it with
+#   /itemsmith get venom_blade
+#
+# An item is a base material + display text + a list of ABILITIES. Each ability is
+# a pipeline:  activator (when)  ->  conditions (if)  ->  targeter (who)  ->  actions (what).
+# You can add as many abilities and as many actions as you like — no limits.
+#
+# TEXTURE: by default the item uses its base material's look. To give it a custom
+# model, supply your OWN resource pack and uncomment ONE of:
+#   item-model: mypack:venom_blade   (1.21.4+, points at assets/mypack/items/venom_blade.json)
+#   custom-model-data: 10001         (legacy packs)
+# Pointing item-model at a model your pack doesn't have shows the purple/black
+# "missing texture" — that's the pack missing, not a bug.
+# ============================================================
+
+material: DIAMOND_SWORD
+name: "<gradient:#00e676:#1de9b6>Venom Blade</gradient>"
+lore:
+  - "<dark_gray>Coated in a lethal toxin.</dark_gray>"
+  - "<gray>On hit: <green>Poison</green> + bonus damage</gray>"
+abilities:
+  - activator: player_hit_entity   # fires when you hit an entity in melee
+    targeter: target               # act on the entity you hit
+    # Seconds between activations for THIS ability; shows the vanilla cooldown sweep on the client.
+    cooldown: 1.5
+    actions:
+      - type: add_damage           # extra damage on the hit
+        amount: 2                  # 2.0 = one heart
+      - type: potion_effect        # then poison the target
+        effect: poison
+        duration: 5                # seconds
+        amplifier: 0               # 0 = level I
+
+recipe:
+  type: shaped
+  shape:
+    - " F "
+    - " D "
+    - " S "
+  ingredients:
+    F: FERMENTED_SPIDER_EYE
+    D: DIAMOND
+    S: STICK

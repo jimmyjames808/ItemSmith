@@ -1,0 +1,31 @@
+name: ItemSmith
+version: '${version}'
+main: mastrjimbo.itemsmith.ItemSmith
+api-version: '1.21'
+author: MastrJimbo
+description: Custom items for Paper - schema-driven abilities, recipes, drops, loot, and an in-game creator GUI.
+softdepend: [Vault, WorldGuard, GriefPrevention]
+commands:
+  itemsmith:
+    description: Browse, give and manage ItemSmith custom items.
+    usage: /itemsmith <catalog|open|create|get|give|list|reload>
+    aliases: [ismith, citems]
+permissions:
+  itemsmith.admin:
+    description: Use ItemSmith admin commands (open, create, get, give, list, reload).
+    default: op
+  itemsmith.catalog:
+    description: Open the player catalog to browse custom items and how to obtain them.
+    default: true
+  itemsmith.bypass.all:
+    description: Bypass all ability gates (cost, cooldown groups, region).
+    default: false
+  itemsmith.bypass.cost:
+    description: Bypass ability use-costs (money, xp, items, hunger, charges).
+    default: false
+  itemsmith.bypass.cooldown:
+    description: Bypass ability cooldown groups.
+    default: false
+  itemsmith.bypass.region:
+    description: Bypass ability region gating.
+    default: false

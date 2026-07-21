@@ -1,0 +1,125 @@
+# ============================================================
+#  Stormforged Greatsword  —  legendary melee weapon
+# ============================================================
+# SHOWS OFF:
+#   * A multi-action on-hit combo (bonus damage + effect + particles + sound)
+#   * A per-target IF/ELSE that only triggers a "desperation" burst when the
+#     wielder is low on health  (health_percent_below)
+#   * A CHANCE gate for a random lightning proc
+#   * A right-click "Thunderclap": two abilities sharing one COOLDOWN-GROUP —
+#       - a self-targeted cast (title + ring visuals)
+#       - a radius AoE that damages, knocks back and slows every nearby mob
+#   * Obtained with a SMITHING recipe (netherite sword + a nether star)
+#
+# Get it once loaded with:  /itemsmith get stormforged_greatsword
+# ============================================================
+
+material: NETHERITE_SWORD
+name: "<gradient:#7c4dff:#18ffff><bold>Stormforged Greatsword</bold></gradient>"
+lore:
+  - "<dark_gray>Quenched in a caught thunderbolt.</dark_gray>"
+  - "<gray>On hit: <yellow>bonus damage</yellow>, <dark_purple>wither</dark_purple>, rare lightning</gray>"
+  - "<gray>Right-click: <aqua>Thunderclap</aqua> — AoE burst</gray>"
+  - "<dark_gray><italic>Below 35% HP it strikes back twice as hard.</italic></dark_gray>"
+
+abilities:
+  # --- On-hit combo -------------------------------------------------------
+  - activator: player_hit_entity
+    targeter: target
+    cooldown: 0.5
+    actions:
+      - type: add_damage
+        amount: 3
+      - type: potion_effect
+        effect: wither
+        duration: 3
+        amplifier: 0
+      - type: particle
+        particle: enchanted_hit
+        count: 14
+        spread: 0.5
+      - type: play_sound
+        sound: entity.player.attack.crit
+        volume: 0.8
+        pitch: 1.2
+      # 20% chance to call down a real bolt on whatever you hit
+      - type: chance
+        chance: 0.2
+        do:
+          - type: strike_lightning
+            damage: true
+          - type: play_sound
+            sound: entity.lightning_bolt.thunder
+            volume: 0.7
+            pitch: 1.0
+      # Desperation: only when the WIELDER is under 35% health
+      - type: if
+        conditions:
+          - type: health_percent_below
+            percent: 35
+        then:
+          - type: lifesteal
+            fraction: 0.5
+          - type: potion_effect_self
+            effect: regeneration
+            duration: 4
+            amplifier: 1
+          - type: send_actionbar
+            text: "<red><bold>DESPERATION</bold></red>"
+
+  # --- Thunderclap: the cast (self visuals) -------------------------------
+  # Both right-click abilities carry their own 8s cooldown (the engine keys a
+  # per-ability cooldown by index), so they fire together on one click and lock
+  # together — and the sword shows the vanilla cooldown sweep while recharging.
+  - activator: right_click
+    targeter: self
+    cooldown: 8
+    actions:
+      - type: send_title
+        title: "<aqua><bold>Thunderclap</bold></aqua>"
+        subtitle: "<gray>The storm answers.</gray>"
+      - type: play_sound
+        sound: entity.lightning_bolt.thunder
+        volume: 1.0
+        pitch: 0.8
+      - type: particle_ring
+        particle: electric_spark
+        radius: 4
+        points: 60
+      - type: particle_helix
+        particle: soul_fire_flame
+        radius: 1.2
+        height: 2.5
+        points: 40
+        turns: 3
+
+  # --- Thunderclap: the AoE (radius damage) -------------------------------
+  - activator: right_click
+    targeter:
+      type: radius
+      radius: 5
+      living_only: true
+      include_self: false
+    cooldown: 8
+    actions:
+      - type: damage
+        amount: 8
+        from_caster: true
+      - type: knockback
+        strength: 1.4
+        lift: 0.5
+      - type: potion_effect
+        effect: slowness
+        duration: 3
+        amplifier: 1
+      - type: chance
+        chance: 0.5
+        do:
+          - type: strike_lightning
+            damage: true
+
+recipes:
+  - type: smithing
+    template: NETHERITE_UPGRADE_SMITHING_TEMPLATE
+    base: NETHERITE_SWORD
+    addition: NETHER_STAR

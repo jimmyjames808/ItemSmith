@@ -1,0 +1,108 @@
+# ============================================================
+#  Chronomancer's Clock  —  nested-flow-control showcase
+# ============================================================
+# SHOWS OFF (this item exists to stress-test the scripting engine):
+#   * REPEAT (6 pulses) that each contain...
+#       - an IF / ELSE  (sneaking -> slow time on yourself, else hasten)
+#       - a WEIGHTED RANDOM flourish
+#       - a DELAY, so the pulses play out over time instead of all at once
+#   * A trailing DELAY + wind-down after the loop finishes.
+#   This is the "timed, branching combo" that flat action lists can't do.
+#
+# Get it once loaded with:  /itemsmith get chronomancers_clock
+# ============================================================
+
+material: CLOCK
+name: "<gradient:#b388ff:#e1bee7><bold>Chronomancer's Clock</bold></gradient>"
+lore:
+  - "<gray>Its hands turn in directions time forgot.</gray>"
+  - "<gray>Right-click: <light_purple>Time Fracture</light_purple></gray>"
+  - "<dark_gray><italic>Sneak to slow yourself; stand to hasten.</italic></dark_gray>"
+
+abilities:
+  - activator: right_click
+    targeter: self
+    cooldown: 12
+    actions:
+      - type: send_title
+        title: "<light_purple><bold>Time Fracture</bold></light_purple>"
+        subtitle: "<gray>Six beats of a broken hour.</gray>"
+      - type: play_sound
+        sound: block.beacon.power_select
+        volume: 1.0
+        pitch: 1.4
+      # Six timed pulses, each branching two ways ---------------------------
+      - type: repeat
+        times: 6
+        do:
+          - type: particle_ring
+            particle: end_rod
+            radius: 3
+            points: 40
+          - type: particle_sphere
+            particle: portal
+            radius: 1
+            points: 20
+          - type: play_sound
+            sound: block.note_block.chime
+            volume: 0.7
+            pitch: 1.5
+          # Branch on player state, per pulse
+          - type: if
+            conditions:
+              - type: is_sneaking
+            then:
+              - type: potion_effect_self
+                effect: slowness
+                duration: 1
+                amplifier: 4
+            else:
+              - type: potion_effect_self
+                effect: speed
+                duration: 1
+                amplifier: 2
+          # Random cosmetic flourish, per pulse
+          - type: random
+            branches:
+              - weight: 3
+                do:
+                  - type: particle
+                    particle: witch
+                    count: 15
+                    spread: 0.6
+              - weight: 2
+                do:
+                  - type: particle
+                    particle: happy_villager
+                    count: 15
+                    spread: 0.6
+              - weight: 1
+                do:
+                  - type: strike_lightning
+                    damage: false
+                  - type: play_sound
+                    sound: entity.lightning_bolt.thunder
+                    volume: 0.5
+                    pitch: 1.6
+          # Space the next pulse ~0.4s out
+          - type: delay
+            ticks: 8
+      # Wind-down after the loop -------------------------------------------
+      - type: delay
+        ticks: 10
+      - type: potion_effect_self
+        effect: regeneration
+        duration: 5
+        amplifier: 1
+      - type: send_actionbar
+        text: "<light_purple>The threads of time settle.</light_purple>"
+
+recipes:
+  - type: shaped
+    shape:
+      - "AAA"
+      - "ACA"
+      - "AAA"
+    ingredients:
+      A: AMETHYST_SHARD
+      C: CLOCK

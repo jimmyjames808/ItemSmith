@@ -1,0 +1,98 @@
+# ============================================================
+#  Earthshaker Drill  —  charged mining tool
+# ============================================================
+# SHOWS OFF:
+#   * A CHARGE counter used as a power cell (charges + max-charges +
+#     durability-bar), with on-depletion: keep_inert so the tool stays and
+#     can be recharged rather than vanishing.
+#   * Two mining modes on ONE block-break trigger, split by an is_sneaking
+#     condition (with invert: true):
+#       - normal mine  -> auto_smelt_drops (ores drop smelted)
+#       - sneak mine    -> vein_break (rip the whole connected vein)
+#     ...each with a different charge-cost.
+#   * A refuel ability: sneak-right-click spends a COAL (item cost) to
+#     recharge the cells (add_charges).
+#
+# Get it once loaded with:  /itemsmith get earthshaker_drill
+# ============================================================
+
+material: NETHERITE_PICKAXE
+name: "<gradient:#ff8f00:#ffd54f><bold>Earthshaker Drill</bold></gradient>"
+lore:
+  - "<gray>A pneumatic drill fed by burning fuel cells.</gray>"
+  - "<gray>Mine: <yellow>auto-smelts ores</yellow></gray>"
+  - "<gray>Sneak-mine: <gold>vein miner</gold> (whole seam)</gray>"
+  - "<gray>Sneak + right-click a <white>Coal</white> to refuel <#ffcc80>(+50)</#ffcc80></gray>"
+
+# Power cells: 250 charges. When empty the drill goes inert (keeps its item)
+# until you refuel it.
+charges: 250
+max-charges: 250
+on-depletion: keep_inert
+durability-bar: true
+
+abilities:
+  # --- Normal mining: smelt ores as you dig ------------------------------
+  - activator: block_break
+    targeter: target
+    charge-cost: 1
+    conditions:
+      - type: is_sneaking
+        invert: true
+    actions:
+      - type: auto_smelt_drops
+      - type: particle
+        particle: electric_spark
+        count: 6
+        spread: 0.2
+
+  # --- Sneak mining: vein miner ------------------------------------------
+  - activator: block_break
+    targeter: target
+    charge-cost: 2
+    conditions:
+      - type: is_sneaking
+    actions:
+      - type: vein_break
+        limit: 24
+      - type: particle_burst
+        particle: crit
+        count: 24
+        spread: 0.4
+      - type: play_sound
+        sound: block.amethyst_block.break
+        volume: 0.6
+        pitch: 0.8
+
+  # --- Refuel with coal ---------------------------------------------------
+  - activator: sneak_right_click
+    targeter: self
+    cost:
+      items:
+        - material: COAL
+          amount: 1
+    deny-message: "<red>You need a piece of Coal to refuel the drill.</red>"
+    actions:
+      - type: add_charges
+        amount: 50
+      - type: play_sound
+        sound: block.blastfurnace.fire_crackle
+        volume: 1.0
+        pitch: 1.0
+      - type: particle
+        particle: flame
+        count: 20
+        spread: 0.4
+      - type: send_actionbar
+        text: "<gold>Fuel cells recharged.</gold>"
+
+recipes:
+  - type: shaped
+    shape:
+      - "III"
+      - "RDR"
+      - " D "
+    ingredients:
+      I: NETHERITE_INGOT
+      R: REDSTONE_BLOCK
+      D: DIAMOND

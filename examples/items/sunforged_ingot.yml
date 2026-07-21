@@ -1,0 +1,64 @@
+# ============================================================
+#  Sunforged Ingot  —  multi-recipe trinket
+# ============================================================
+# SHOWS OFF:
+#   * THREE recipes on one item — the same Sunforged Ingot can be
+#       - crafted (shaped),
+#       - smelted (blasting) from raw gold, and
+#       - cut (stonecutting) from a gold block.
+#   * A world-CONDITION gate: its warming right-click only works by day,
+#     with a deny-message at night (is_day).
+#
+# Get it once loaded with:  /itemsmith get sunforged_ingot
+# ============================================================
+
+material: GOLD_INGOT
+name: "<gradient:#ffab00:#fff59d><bold>Sunforged Ingot</bold></gradient>"
+lore:
+  - "<gray>A bar of gold that swallowed a sunbeam.</gray>"
+  - "<gray>Right-click by <yellow>day</yellow>: bask in warmth</gray>"
+  - "<dark_gray><italic>Dormant after dusk.</italic></dark_gray>"
+
+abilities:
+  - activator: right_click
+    targeter: self
+    cooldown: 3
+    conditions:
+      - type: is_day
+    deny-message: "<gray>The Sunforged Ingot is dormant at night.</gray>"
+    actions:
+      - type: potion_effect_self
+        effect: fire_resistance
+        duration: 20
+        amplifier: 0
+      - type: particle_burst
+        particle: flame
+        count: 30
+        spread: 0.5
+      - type: particle
+        particle: wax_off
+        count: 12
+        spread: 0.6
+      - type: play_sound
+        sound: block.fire.ambient
+        volume: 1.0
+        pitch: 1.0
+      - type: send_actionbar
+        text: "<gold>Sunforged warmth washes over you.</gold>"
+
+recipes:
+  - type: shaped
+    shape:
+      - "GNG"
+      - "NBN"
+      - "GNG"
+    ingredients:
+      G: GLOWSTONE_DUST
+      N: GOLD_NUGGET
+      B: GOLD_BLOCK
+  - type: blasting
+    input: RAW_GOLD
+    experience: 1.0
+    cook-time: 100
+  - type: stonecutting
+    input: GOLD_BLOCK

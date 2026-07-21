@@ -1,0 +1,39 @@
+package mastrjimbo.itemsmith.component.action.command;
+
+import mastrjimbo.itemsmith.engine.AbilityContext;
+import mastrjimbo.itemsmith.engine.Action;
+import mastrjimbo.itemsmith.param.ParamDef;
+import mastrjimbo.itemsmith.param.ParamSchema;
+import mastrjimbo.itemsmith.param.ParamType;
+import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.registry.Categories;
+
+/**
+ * Runs a command as the caster (sudo), constrained by whatever permissions the
+ * player already has. Supports the {@code {player}} and {@code {item}}
+ * placeholders. No leading slash.
+ */
+public final class RunCommandPlayerAction implements Action {
+
+    public static final String ID = "run_command_player";
+
+    private static final ParamSchema SCHEMA = ParamSchema.builder()
+            .add(ParamDef.of("command", ParamType.STRING, "")
+                    .label("Command").desc("Command to run as the player, no leading slash. {player} and {item} are substituted."))
+            .build();
+
+    @Override public String id() { return ID; }
+    @Override public String category() { return Categories.COMMAND; }
+    @Override public String displayName() { return "Run Command (Player)"; }
+    @Override public String description() { return "Runs a command as the caster."; }
+    @Override public ParamSchema schema() { return SCHEMA; }
+
+    @Override
+    public void run(AbilityContext ctx, Object target, ParamValues params) {
+        String cmd = params.getString("command", "")
+                .replace("{player}", ctx.player().getName())
+                .replace("{item}", ctx.itemId());
+        if (cmd.isBlank()) return;
+        ctx.player().performCommand(cmd);
+    }
+}

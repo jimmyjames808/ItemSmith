@@ -1,0 +1,83 @@
+# ============================================================
+#  Heart of the Warden  —  boss-drop trophy
+# ============================================================
+# SHOWS OFF:
+#   * A rare item you cannot craft — you must EARN it:
+#       - drops from killing a WARDEN (require-player-kill: true)
+#       - injected into deep-structure chest LOOT tables at 15%
+#   * A flashy right-click COSMETIC (no combat): firework, particle sphere,
+#     boss bar, and a WEIGHTED RANDOM flourish so it isn't the same twice.
+#
+# Get it (for testing) with:  /itemsmith get warden_heart
+# ============================================================
+
+material: ECHO_SHARD
+name: "<gradient:#0d3b3e:#26c6da><bold>Heart of the Warden</bold></gradient>"
+lore:
+  - "<dark_gray>It still beats, slow and deep.</dark_gray>"
+  - "<gray>A trophy torn from the dark below.</gray>"
+  - "<gray>Right-click: <aqua>let it pulse</aqua></gray>"
+
+abilities:
+  - activator: right_click
+    targeter: self
+    cooldown: 5
+    actions:
+      - type: send_bossbar
+        text: "<dark_aqua>The Warden's heart beats...</dark_aqua>"
+        color: BLUE
+        seconds: 4
+      - type: play_sound
+        sound: entity.warden.heartbeat
+        volume: 1.0
+        pitch: 0.8
+      - type: particle_sphere
+        particle: sculk_soul
+        radius: 1.5
+        points: 60
+      - type: spawn_firework
+        color: blue
+        shape: STAR
+        power: 1
+      # No two pulses look alike
+      - type: random
+        branches:
+          - weight: 3
+            do:
+              - type: particle_ring
+                particle: electric_spark
+                radius: 2.5
+                points: 45
+          - weight: 2
+            do:
+              - type: particle_helix
+                particle: soul_fire_flame
+                radius: 1.0
+                height: 3.0
+                points: 50
+                turns: 4
+          - weight: 1
+            do:
+              - type: strike_lightning
+                damage: false
+              - type: play_sound
+                sound: entity.warden.sonic_boom
+                volume: 0.7
+                pitch: 1.0
+
+drops:
+  mobs:
+    - entities: [WARDEN]
+      chance: 1.0
+      min: 1
+      max: 1
+      require-player-kill: true
+
+loot:
+  - tables:
+      - chests/ancient_city
+      - chests/woodland_mansion
+      - chests/end_city_treasure
+    chance: 0.15
+    min: 1
+    max: 1

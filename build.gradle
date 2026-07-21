@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id("com.gradleup.shadow") version "8.3.5"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
+}
+
+group = 'mastrjimbo'
+version = '1.0.0'
+
+base {
+    // Clean artifact name so the jar isn't affected by spaces in the project folder.
+    archivesName = 'ItemSmith'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven { name = "jitpack";   url = "https://jitpack.io" }               // VaultAPI
+    maven { name = "enginehub"; url = "https://maven.enginehub.org/repo/" } // WorldGuard / WorldEdit
+    // Uncomment to use PlaceholderAPI:
+    // maven { name = "placeholderapi"; url = "https://repo.extendedclip.com/releases/" }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    // M5 GUI stack: chest menus. The -paper artifact excludes net.kyori (Paper provides Adventure),
+    // so this is the leanest shade; relocated below so it can't clash with another plugin's copy.
+    implementation("dev.triumphteam:triumph-gui-paper:3.1.13")
+    // Soft-depend integrations (M4). compileOnly only — never shaded; absent at runtime = feature disabled.
+    // transitive = false: we reference only a few API classes; the transitive deps (fastutil/log4j/gson)
+    // are "provided by Mojang" at runtime and don't resolve from these repos.
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1") { transitive = false }
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.13") { transitive = false }
+    compileOnly("com.sk89q.worldguard:worldguard-core:7.0.13") { transitive = false }
+    compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0") { transitive = false }
+    compileOnly("com.sk89q.worldedit:worldedit-core:7.3.0") { transitive = false }
+    // compileOnly("me.clip:placeholderapi:2.11.6")
+}
+
+tasks {
+    runServer {
+        // Test server version launched by the "Run Server" task.
+        // run-paper auto-detects the Shadow plugin and launches the shadowJar output.
+        minecraftVersion("1.21.8")
+    }
+}
+
+// Shade + relocate the GUI stack so ItemSmith stays a single drop-in jar with no
+// classpath clashes. Relocate the whole dev.triumphteam group to catch any sub-packages.
+shadowJar {
+    relocate 'dev.triumphteam', 'mastrjimbo.itemsmith.libs.triumph'
+}
+tasks.assemble {
+    dependsOn tasks.shadowJar
+}
+
+def targetJavaVersion = 21
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}

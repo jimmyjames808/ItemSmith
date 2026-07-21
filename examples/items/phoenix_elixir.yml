@@ -1,0 +1,80 @@
+# ============================================================
+#  Elixir of the Phoenix  —  consumable
+# ============================================================
+# SHOWS OFF:
+#   * An on-CONSUME ability (fires when you finish eating it).
+#   * Self-buffs stacked with FLOW CONTROL:
+#       - an instant heal + effects on drink
+#       - a REPEAT + DELAY loop that pulses a flame aura over ~3 seconds
+#       - a DELAY that grants a delayed "second wind" absorption shield
+#   * Obtained by SMOKING a glistering melon slice.
+#
+# Get it once loaded with:  /itemsmith get phoenix_elixir
+# ============================================================
+
+material: GOLDEN_APPLE
+name: "<gradient:#ff6d00:#ffea00><bold>Elixir of the Phoenix</bold></gradient>"
+lore:
+  - "<gray>Distilled sunfire. Eat to be reborn.</gray>"
+  - "<gray>Instant heal + <gold>Fire Resistance</gold> + <light_purple>Regeneration</light_purple></gray>"
+  - "<dark_gray><italic>A second wind blooms moments later.</italic></dark_gray>"
+
+abilities:
+  - activator: item_consume
+    targeter: self
+    actions:
+      - type: send_title
+        title: "<gold><bold>Rebirth</bold></gold>"
+        subtitle: "<yellow>Sunfire fills your veins.</yellow>"
+      - type: heal
+        amount: 6
+      - type: potion_effect_self
+        effect: fire_resistance
+        duration: 30
+        amplifier: 0
+      - type: potion_effect_self
+        effect: regeneration
+        duration: 6
+        amplifier: 1
+      - type: play_sound
+        sound: item.totem.use
+        volume: 1.0
+        pitch: 1.1
+      # Pulsing flame aura: 5 bursts, one every half-second (repeat + delay)
+      - type: repeat
+        times: 5
+        do:
+          - type: particle_sphere
+            particle: flame
+            radius: 1.5
+            points: 30
+          - type: particle
+            particle: lava
+            count: 4
+            spread: 0.8
+          - type: delay
+            ticks: 10
+      # Delayed "second wind": ~5s after drinking, a shield blooms
+      - type: delay
+        ticks: 100
+      - type: absorption
+        amount: 8
+        duration: 20
+      - type: particle_helix
+        particle: soul_fire_flame
+        radius: 1.0
+        height: 2.5
+        points: 50
+        turns: 4
+      - type: play_sound
+        sound: block.respawn_anchor.charge
+        volume: 0.8
+        pitch: 1.2
+      - type: send_actionbar
+        text: "<gold>The Phoenix stirs within you.</gold>"
+
+recipes:
+  - type: smoking
+    input: GLISTERING_MELON_SLICE
+    experience: 1.0
+    cook-time: 200
