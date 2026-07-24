@@ -1,11 +1,13 @@
 package mastrjimbo.itemsmith.component.action.combat;
 
+import mastrjimbo.itemsmith.ItemSmith;
 import mastrjimbo.itemsmith.engine.AbilityContext;
 import mastrjimbo.itemsmith.engine.Action;
 import mastrjimbo.itemsmith.param.ParamDef;
 import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.registry.Activators;
 import mastrjimbo.itemsmith.registry.Categories;
 import mastrjimbo.itemsmith.util.ActionDamage;
 import mastrjimbo.itemsmith.util.Visuals;
@@ -67,6 +69,13 @@ public final class ThrowItemAction implements Action {
                             + "Non-zero stops an off-origin model orbiting instead of spinning in place."))
             .add(ParamDef.of("particle", ParamType.PARTICLE, "electric_spark")
                     .label("Trail particle").desc("Particle trailed along the flight path."))
+            .add(ParamDef.of("hit_sound", ParamType.SOUND, "")
+                    .label("Hit sound").desc("Played where it strikes something. Blank for silent."))
+            .add(ParamDef.of("catch_sound", ParamType.SOUND, "")
+                    .label("Catch sound").desc("Played on the caster when it flies back into their hand. "
+                            + "Blank for silent."))
+            .add(ParamDef.of("sound_pitch", ParamType.DOUBLE, 1.0)
+                    .label("Sound pitch").desc("Pitch for the hit and catch sounds."))
             .build();
 
     @Override public String id() { return ID; }
@@ -91,6 +100,10 @@ public final class ThrowItemAction implements Action {
         Vector3f faceAxis = axis(params.getString("face", "-y"));
         double pivot = params.getDouble("pivot", 0.0);
         Particle trail = params.getParticle("particle");
+        String hitSound = params.getString("hit_sound", "");
+        String catchSound = params.getString("catch_sound", "");
+        float soundPitch = (float) params.getDouble("sound_pitch", 1.0);
+        final ItemSmith smith = ctx.plugin() instanceof ItemSmith is ? is : null;
 
         ItemStack visual = ctx.itemStack() != null ? ctx.itemStack().clone() : null;
         if (visual == null) return;
@@ -131,7 +144,13 @@ public final class ThrowItemAction implements Action {
                     for (Entity e : world.getNearbyEntities(cur, hitRadius, hitRadius, hitRadius)) {
                         if (e.equals(player) || e.equals(display) || !(e instanceof LivingEntity living)) continue;
                         // Routed through ActionDamage so this can't re-trigger hit activators.
-                        ActionDamage.deal(living, damage, player);
+                        if (damage > 0) ActionDamage.deal(living, damage, player);
+                        if (!hitSound.isBlank()) world.playSound(cur, hitSound, 1f, soundPitch);
+                        // Run the item's projectile_hit_entity ability (if any) on whatever we struck,
+                        // the same hook shoot_projectile uses — so the impact is authored in YAML.
+                        if (smith != null) {
+                            smith.engine().fireItem(Activators.PROJECTILE_HIT_ENTITY, player, visual, null, living);
+                        }
                         returning = true;
                         break;
                     }
@@ -141,6 +160,9 @@ public final class ThrowItemAction implements Action {
                     Location home = player.getEyeLocation();
                     Vector back = home.toVector().subtract(cur.toVector());
                     if (back.lengthSquared() <= 2.25) { // within 1.5 blocks - caught
+                        if (!catchSound.isBlank()) {
+                            world.playSound(player.getLocation(), catchSound, 1f, soundPitch);
+                        }
                         finish();
                         return;
                     }

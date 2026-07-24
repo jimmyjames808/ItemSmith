@@ -64,7 +64,7 @@ Damage, healing, status and crowd-control on the target.
 | `strike_lightning` | Calls lightning on the target (or a cosmetic flash). | `damage`, `damage_caster` |
 | `explosion` | Creates an explosion at the target. | `power`, `fire`, `break_blocks` |
 | `shoot_projectile` | Fires a flying head-on-armour-stand projectile that damages the first thing it hits, then can trigger the item's projectile-hit abilities. | `head`, `speed`, `range`, `damage`, `hit_radius`, `particle`, `gravity`, `trail_head`, `trail_head_owner` |
-| `throw_item` | Throws **this item** as a boomerang: it flies out rendering the item's own model, strikes the first living entity it passes, then homes back to the caster and vanishes. | `speed`, `range`, `damage`, `hit_radius`, `spin`, `face`, `pivot`, `particle` |
+| `throw_item` | Throws **this item** as a boomerang: it flies out rendering the item's own model, strikes the first living entity it passes, then homes back to the caster and vanishes. Fires the item's `projectile_hit_entity` ability on impact. | `speed`, `range`, `damage`, `hit_radius`, `spin`, `face`, `pivot`, `particle`, `hit_sound`, `catch_sound`, `sound_pitch` |
 
 ```yaml
 # On-hit lifesteal vampire blade
@@ -128,6 +128,15 @@ Two params depend on **how the model was built**, not on the effect you want:
 - **`pivot`** — blocks along the model's Y axis to its visual centre. Displays rotate about the entity
   origin, so a model whose geometry sits off-origin will visibly *orbit* that point instead of spinning in
   place. Set this to the offset to spin cleanly. Leave at `0` for centred models.
+
+Because every other action in the ability runs the instant you throw, anything that should happen *later*
+has to come from the action itself:
+
+- **`hit_sound`** plays where it strikes, **`catch_sound`** plays on the caster when it lands back in their
+  hand (only on a real catch, never when a throw is abandoned), both at `sound_pitch`.
+- **On impact it fires the item's own [`projectile_hit_entity`](activators.md#projectile) ability** on
+  whatever it struck — the same hook `shoot_projectile` uses. That's where the flare belongs: write the
+  impact as a normal ability and it can do anything. Set `damage: 0` to let the hit ability do all the work.
 
 ```yaml
 # Mjolnir — throw it, strike something, catch it on the way back.
