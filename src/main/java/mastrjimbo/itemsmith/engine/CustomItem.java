@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fully-parsed custom item: its base material, resource-pack binding
@@ -22,8 +23,13 @@ import java.util.List;
  * The charge counter is a single PDC integer (see {@link ItemBuilder}); abilities
  * spend it via their gate's {@code charge-cost}, lore shows it via {@code <charges>}/
  * {@code <max_charges>} tokens, and {@code durabilityBar} optionally mirrors it onto
- * the vanilla durability bar. This is an immutable definition; {@link ItemBuilder}
- * turns it into a tagged {@link org.bukkit.inventory.ItemStack}.
+ * the vanilla durability bar.
+ *
+ * <p>{@code stats} are named persistent values (stored as PDC strings, numbers kept as text)
+ * seeded on every fresh build and then mutated per-item over its lifetime by the {@code set_stat}
+ * / {@code add_stat} actions, read by the {@code stat_*} conditions, and shown in lore via
+ * {@code <stat:name>} tokens. Empty = the item carries no stats. This is an immutable definition;
+ * {@link ItemBuilder} turns it into a tagged {@link org.bukkit.inventory.ItemStack}.
  */
 public record CustomItem(
         String id,
@@ -39,6 +45,7 @@ public record CustomItem(
         DepletionPolicy onDepletion,
         boolean durabilityBar,
         DropSources drops,
-        LootInjection loot
+        LootInjection loot,
+        Map<String, String> stats
 ) {
 }

@@ -93,9 +93,30 @@ public final class ItemParser {
         List<RecipeSpec> recipes = parseRecipes(id, s);
         DropSources drops = parseDrops(id, s.getConfigurationSection("drops"));
         LootInjection loot = parseLoot(id, s);
+        Map<String, String> stats = parseStats(id, s.getConfigurationSection("stats"));
 
         return new CustomItem(id, material, itemModel, customModelData, name, lore, recipes, abilities,
-                charges, maxCharges, onDepletion, durabilityBar, drops, loot);
+                charges, maxCharges, onDepletion, durabilityBar, drops, loot, stats);
+    }
+
+    /**
+     * Reads the {@code stats:} block into name→initial-value pairs. Values are stringified (a YAML
+     * number keeps its text form) since stats are stored as PDC strings; numeric ops parse them back.
+     * Names must be {@code [a-z0-9_]+} so they form valid PDC key suffixes.
+     */
+    private Map<String, String> parseStats(String id, ConfigurationSection s) {
+        if (s == null) return Map.of();
+        Map<String, String> stats = new LinkedHashMap<>();
+        for (String name : s.getKeys(false)) {
+            String key = name.toLowerCase(Locale.ROOT);
+            if (!key.matches("[a-z0-9_]+")) {
+                warn.accept("Item '" + id + "' stat '" + name + "' has an invalid name (use a-z, 0-9, _); skipping.");
+                continue;
+            }
+            Object value = s.get(name);
+            stats.put(key, value == null ? "" : String.valueOf(value));
+        }
+        return stats;
     }
 
     private List<Ability> parseAbilities(String id, ConfigurationSection s) {

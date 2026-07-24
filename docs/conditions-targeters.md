@@ -105,6 +105,19 @@ targeter, target conditions are evaluated **per resolved entity**.
 | `charges_below` | the item has fewer than N charges | `amount` |
 | `cooldown_ready` | a named cooldown has elapsed | `key`, `seconds` |
 
+### Stats (persistent item state)
+
+Read a named [stat](yaml-reference.md#stats) off the triggering item. Put one of these in an
+ability's `conditions:` to gate it behind a threshold — that's how leveling/evolving items work
+(see the [worked example](actions.md#persistent-stats--leveling--evolving-items)). Numeric compares
+read a non-numeric/unset stat as 0; `stat_equals` compares as text (so it also handles string stats).
+
+| id | Passes when… | Params |
+|---|---|---|
+| `stat_above` | a numeric stat is greater than `amount` | `name`, `amount` |
+| `stat_below` | a numeric stat is less than `amount` | `name`, `amount` |
+| `stat_equals` | a stat equals `value` (text compare) | `name`, `value` |
+
 ### Economy (needs [Vault](integrations.md#vault))
 
 | id | Passes when the caster's balance is… | Params |

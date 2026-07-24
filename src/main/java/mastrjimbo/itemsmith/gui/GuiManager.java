@@ -98,7 +98,7 @@ public final class GuiManager {
         CustomItem base = session.draft().toCustomItem();
         CustomItem copy = new CustomItem(newId, base.material(), base.itemModel(), base.customModelData(),
                 base.name(), base.lore(), base.recipes(), base.abilities(), base.charges(), base.maxCharges(),
-                base.onDepletion(), base.durabilityBar(), base.drops(), base.loot());
+                base.onDepletion(), base.durabilityBar(), base.drops(), base.loot(), base.stats());
         try {
             store.save(copy);
         } catch (IOException e) {

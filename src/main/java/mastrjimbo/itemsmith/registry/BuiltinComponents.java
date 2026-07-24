@@ -7,6 +7,8 @@ import mastrjimbo.itemsmith.component.action.PotionEffectAction;
 // --- M4 gating & economics ---
 import mastrjimbo.itemsmith.component.action.charges.AddChargesAction;
 import mastrjimbo.itemsmith.component.action.charges.SetChargesAction;
+import mastrjimbo.itemsmith.component.action.stat.AddStatAction;
+import mastrjimbo.itemsmith.component.action.stat.SetStatAction;
 import mastrjimbo.itemsmith.component.action.cooldown.SetCooldownAction;
 import mastrjimbo.itemsmith.component.action.economy.GiveMoneyAction;
 import mastrjimbo.itemsmith.component.action.economy.PayTargetAction;
@@ -14,6 +16,9 @@ import mastrjimbo.itemsmith.component.action.economy.SetMoneyAction;
 import mastrjimbo.itemsmith.component.action.economy.TakeMoneyAction;
 import mastrjimbo.itemsmith.component.action.player.*;
 import mastrjimbo.itemsmith.component.condition.charges.ChargesAboveCondition;
+import mastrjimbo.itemsmith.component.condition.stat.StatAboveCondition;
+import mastrjimbo.itemsmith.component.condition.stat.StatBelowCondition;
+import mastrjimbo.itemsmith.component.condition.stat.StatEqualsCondition;
 import mastrjimbo.itemsmith.component.condition.charges.ChargesBelowCondition;
 import mastrjimbo.itemsmith.component.condition.cooldown.CooldownReadyCondition;
 import mastrjimbo.itemsmith.component.condition.economy.BalanceAboveCondition;
@@ -526,6 +531,9 @@ public final class BuiltinComponents {
         r.register(new WearingCondition());
         // --- M4: charges / cooldown / economy / region ---
         r.register(new ChargesAboveCondition());
+        r.register(new StatAboveCondition());
+        r.register(new StatBelowCondition());
+        r.register(new StatEqualsCondition());
         r.register(new ChargesBelowCondition());
         r.register(new CooldownReadyCondition());
         r.register(new HasMoneyCondition());
@@ -720,6 +728,8 @@ public final class BuiltinComponents {
         r.register(new PayTargetAction());
         r.register(new AddChargesAction());
         r.register(new SetChargesAction());
+        r.register(new SetStatAction());
+        r.register(new AddStatAction());
         r.register(new SetCooldownAction());
     }
 

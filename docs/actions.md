@@ -412,9 +412,66 @@ Money (needs [Vault + economy](integrations.md#vault)), item charges, and named 
 | `add_charges` | Adds charges to the trigger item, up to its max. | `amount` |
 | `set_charges` | Sets the trigger item's charge counter. | `amount` |
 | `set_cooldown` | Starts a named cooldown on the caster. | `key`, `seconds` |
+| `set_stat` | Sets a persistent [stat](yaml-reference.md#stats) on the trigger item (number or text). | `name`, `value` |
+| `add_stat` | Adds to a numeric stat on the trigger item (negative subtracts). | `name`, `amount` |
 
 See [Gates → Charges](gates.md#charges) and [Gates → Cooldowns](gates.md#cooldowns) for how
 charges and named cooldowns interact with the gate.
+
+### Persistent stats — leveling & evolving items
+
+`stat`s are named values that live **on the individual item** and survive across uses, drops and
+restarts (declared in a [`stats:`](yaml-reference.md#stats) block). Read them with the
+`stat_above` / `stat_below` / `stat_equals` [conditions](conditions-targeters.md#stats), change them
+with `set_stat` / `add_stat`, and show them in lore with a `<stat:name>` token.
+
+Evolution needs **no special mechanism** — because abilities already take `conditions:`, gating a
+stronger ability behind a stat threshold *is* the evolution. Count uses with `add_stat`, unlock
+abilities with `stat_above`, and rename tiers with the existing `set_item_name`:
+
+```yaml
+stats:
+  level: 1
+  uses: 0
+abilities:
+  # Count every use.
+  - activator: right_click
+    targeter: self
+    actions:
+      - type: add_stat
+        name: uses
+        amount: 1
+  # Every 5th use: level up and rename. Gated so it only fires on the threshold.
+  - activator: right_click
+    targeter: self
+    conditions:
+      - type: stat_equals
+        name: uses
+        value: '5'
+    actions:
+      - type: set_stat
+        name: uses
+        value: '0'
+      - type: add_stat
+        name: level
+        amount: 1
+      - type: set_item_name
+        name: "<gold>Artifact Ring II</gold>"
+  # The evolved power: only unlocks once level > 2.
+  - activator: right_click
+    targeter: self
+    conditions:
+      - type: stat_above
+        name: level
+        amount: 2
+    actions:
+      - type: dash_forward
+        strength: 1.4
+```
+
+> Stats need the item's stack, so they work on hit/click/tick activators but **not** on
+> `projectile_hit*` (those fire with no stack). Put stats on unstackable items — a stat lives per
+> stack, so a stacked item would share one value.
 
 ---
 

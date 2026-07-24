@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Turns a {@link CustomItem} definition into a live, identity-tagged
@@ -55,8 +56,9 @@ public final class ItemBuilder {
         if (item.name() != null && !item.name().isBlank()) {
             meta.displayName(Text.item(item.name()));
         }
-        if ((item.lore() != null && !item.lore().isEmpty()) || item.charges() != null) {
-            meta.lore(renderLore(item, item.charges()));
+        boolean hasStats = item.stats() != null && !item.stats().isEmpty();
+        if ((item.lore() != null && !item.lore().isEmpty()) || item.charges() != null || hasStats) {
+            meta.lore(renderLore(item, item.charges(), item.stats()));
         }
 
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
@@ -67,6 +69,12 @@ public final class ItemBuilder {
             pdc.set(chargesKey, PersistentDataType.INTEGER, item.charges());
             pdc.set(maxChargesKey, PersistentDataType.INTEGER, max);
             reflectDurabilityBar(item, meta, item.charges(), max);
+        }
+
+        // Seed persistent stats with their declared initial values. From here they live on this
+        // physical stack and only the set_stat/add_stat actions change them.
+        if (item.stats() != null) {
+            item.stats().forEach((name, value) -> pdc.set(statKey(name), PersistentDataType.STRING, value));
         }
 
         // Cooldowns are per-ability now, but the client sweep is per-item: give the item its own
@@ -110,7 +118,7 @@ public final class ItemBuilder {
         int v = Math.max(0, Math.min(max, value));
         meta.getPersistentDataContainer().set(chargesKey, PersistentDataType.INTEGER, v);
         meta.getPersistentDataContainer().set(maxChargesKey, PersistentDataType.INTEGER, max);
-        meta.lore(renderLore(def, v));
+        meta.lore(renderLore(def, v, currentStats(meta, def)));
         reflectDurabilityBar(def, meta, v, max);
         stack.setItemMeta(meta);
     }
@@ -126,7 +134,7 @@ public final class ItemBuilder {
         int v = Math.max(0, getCharges(stack) - Math.max(0, by));
         meta.getPersistentDataContainer().set(chargesKey, PersistentDataType.INTEGER, v);
         meta.getPersistentDataContainer().set(maxChargesKey, PersistentDataType.INTEGER, max);
-        meta.lore(renderLore(def, v));
+        meta.lore(renderLore(def, v, currentStats(meta, def)));
         reflectDurabilityBar(def, meta, v, max);
         stack.setItemMeta(meta);
 
@@ -137,6 +145,39 @@ public final class ItemBuilder {
         return false;
     }
 
+    // --- Persistent stats -----------------------------------------------------
+
+    private NamespacedKey statKey(String name) {
+        return new NamespacedKey(plugin, "stat_" + name);
+    }
+
+    /** A stat's current value on a stack, or "" if it has none. */
+    public String getStat(ItemStack stack, String name) {
+        if (stack == null || !stack.hasItemMeta() || name == null || name.isEmpty()) return "";
+        String v = stack.getItemMeta().getPersistentDataContainer().get(statKey(name), PersistentDataType.STRING);
+        return v == null ? "" : v;
+    }
+
+    /** Writes a stat's value and re-renders lore so any {@code <stat:name>} token stays in sync. */
+    public void setStat(ItemStack stack, String name, String value, CustomItem def) {
+        if (stack == null || !stack.hasItemMeta() || name == null || name.isEmpty()) return;
+        ItemMeta meta = stack.getItemMeta();
+        meta.getPersistentDataContainer().set(statKey(name), PersistentDataType.STRING, value == null ? "" : value);
+        if (def != null) meta.lore(renderLore(def, def.charges() != null ? getCharges(stack) : null, currentStats(meta, def)));
+        stack.setItemMeta(meta);
+    }
+
+    /** The live value of every stat the definition declares, read from the stack's PDC (falling back to the seed). */
+    private Map<String, String> currentStats(ItemMeta meta, CustomItem def) {
+        if (def == null || def.stats() == null || def.stats().isEmpty()) return Map.of();
+        Map<String, String> out = new java.util.LinkedHashMap<>();
+        for (Map.Entry<String, String> e : def.stats().entrySet()) {
+            String v = meta.getPersistentDataContainer().get(statKey(e.getKey()), PersistentDataType.STRING);
+            out.put(e.getKey(), v == null ? e.getValue() : v);
+        }
+        return out;
+    }
+
     private void applyDepletion(ItemStack stack, DepletionPolicy policy) {
         DepletionPolicy p = policy == null ? DepletionPolicy.CONSUME : policy;
         switch (p) {
@@ -145,7 +186,7 @@ public final class ItemBuilder {
         }
     }
 
-    private List<Component> renderLore(CustomItem item, Integer charges) {
+    private List<Component> renderLore(CustomItem item, Integer charges, Map<String, String> stats) {
         int max = item.maxCharges() != null ? item.maxCharges() : (item.charges() != null ? item.charges() : 0);
         List<Component> out = new ArrayList<>();
         boolean hasToken = false;
@@ -156,6 +197,12 @@ public final class ItemBuilder {
             if (charges != null) {
                 s = s.replace("<charges>", String.valueOf(charges))
                         .replace("<max_charges>", String.valueOf(max));
+            }
+            // <stat:name> shows the stat's current value; re-rendered on every set_stat so it can't drift.
+            if (stats != null) {
+                for (Map.Entry<String, String> e : stats.entrySet()) {
+                    s = s.replace("<stat:" + e.getKey() + ">", e.getValue());
+                }
             }
             out.add(Text.item(s));
         }

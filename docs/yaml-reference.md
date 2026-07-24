@@ -26,6 +26,10 @@ max-charges: 5                   # (optional) capacity (defaults to `charges`)
 on-depletion: consume            # (optional) consume | break | keep_inert
 durability-bar: false            # (optional) mirror charges onto the vanilla bar
 
+stats:                           # (optional) persistent per-item values (numbers or text)
+  level: 1
+  uses: 0
+
 abilities:                       # (optional) list of ability pipelines
   - activator: right_click
     # ...
@@ -56,11 +60,12 @@ perfectly valid "just a craftable cosmetic" item with no behavior.
 | `item-model` | namespaced key | none | Points at a model in a resource pack (1.21.4+), e.g. `mypack:venom_blade` → `assets/mypack/items/venom_blade.json`. **Bring-your-own-pack:** with no matching pack the item renders as its base material (or the purple/black missing-texture if the key resolves but the pack lacks the model). |
 | `custom-model-data` | int | none | Legacy resource-pack selector. Also BYO-pack. |
 | `name` | MiniMessage | none | Display name. Supports full [MiniMessage](https://docs.advntr.dev/minimessage/format.html) (`<gradient>`, `<red>`, etc.). |
-| `lore` | list of MiniMessage | none | Lore lines. Include the charge tokens `<charges>` / `<max_charges>` to place the counter yourself; if the item has charges but you include **no** `<charges>` token (and no `durability-bar`), a `Charges: N/M` line is appended automatically so the counter is always visible. |
+| `lore` | list of MiniMessage | none | Lore lines. Include the charge tokens `<charges>` / `<max_charges>` to place the counter yourself; if the item has charges but you include **no** `<charges>` token (and no `durability-bar`), a `Charges: N/M` line is appended automatically so the counter is always visible. A `<stat:name>` token shows a [stat's](#stats) live value and re-renders whenever the stat changes. |
 | `charges` | int | none (no counter) | Starting charge count. Once set, charges track and deplete **regardless of lore** — you no longer need a `<charges>` line for them to count. Omitting the key entirely means the item has **no** charge counter. See [Gates → Charges](gates.md#charges). |
 | `max-charges` | int | = `charges` | Charge capacity (used by `add_charges`). |
 | `on-depletion` | enum | `consume` | What happens when charges hit 0: `consume` (remove one from the stack), `break` (remove one + play the item-break effect), `keep_inert` (leave it at 0, unusable until recharged). |
 | `durability-bar` | boolean | `false` | Mirror the charge counter onto the vanilla durability bar so charges show as a depleting bar. |
+| `stats` | map of name → value | none | <a id="stats"></a>Persistent per-item values, numbers or text, seeded here and then changed over the item's life by `set_stat` / `add_stat`, read by the `stat_above` / `stat_below` / `stat_equals` conditions, and shown in lore via a `<stat:name>` token. Names must be `a-z 0-9 _`. Each physical item carries its own values (survives drops/restarts), so use these on **unstackable** items. This is what powers leveling / evolving items — see the [worked example](actions.md#persistent-stats--leveling--evolving-items). |
 | `abilities` | list | empty | The item's behavior. See below. |
 | `recipes` / `recipe` | list / section | none | Crafting recipes. See [Obtaining](obtaining.md). |
 | `drops` | section | none | Mob & block drops. See [Obtaining](obtaining.md). |

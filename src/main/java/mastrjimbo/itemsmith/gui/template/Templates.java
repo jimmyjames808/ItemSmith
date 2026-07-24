@@ -51,7 +51,7 @@ public final class Templates {
     private static ItemDraft item(String id, Material material, AbilityDraft... abilities) {
         List<AbilityDraft> list = new ArrayList<>(List.of(abilities));
         return new ItemDraft(id, material, null, null, "", new ArrayList<>(), new ArrayList<>(), list,
-                null, null, DepletionPolicy.CONSUME, false, DropSources.NONE, LootInjection.NONE);
+                null, null, DepletionPolicy.CONSUME, false, DropSources.NONE, LootInjection.NONE, java.util.Map.of());
     }
 
     /** A fresh ability on the given activator, targeting the trigger's entity, with no actions yet. */

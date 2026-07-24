@@ -90,6 +90,11 @@ public final class ItemSerializer {
             root.set("on-depletion", item.onDepletion().name().toLowerCase(Locale.ROOT));
         }
         if (item.durabilityBar()) root.set("durability-bar", true);
+        // Persistent stat declarations (initial values). These are only the seeds; the live per-item
+        // values live in each stack's PDC, not here.
+        if (item.stats() != null && !item.stats().isEmpty()) {
+            item.stats().forEach((name, value) -> root.set("stats." + name, value));
+        }
     }
 
     private Map<String, Object> writeAbility(Ability ability) {

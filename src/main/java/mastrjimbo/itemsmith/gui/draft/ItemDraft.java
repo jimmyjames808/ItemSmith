@@ -10,7 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The whole in-progress item the creator edits, mirroring {@link CustomItem} with mutable fields.
@@ -33,12 +35,15 @@ public final class ItemDraft {
     private boolean durabilityBar;
     private DropSources drops;
     private LootInjection loot;
+    // Carried through the GUI round-trip unchanged (the creator can't edit stats yet), so editing an
+    // item never wipes its stats: declaration.
+    private final Map<String, String> stats;
 
     public ItemDraft(String id, Material material, NamespacedKey itemModel, Integer customModelData,
                      String name, List<String> lore, List<RecipeSpec> recipes,
                      List<AbilityDraft> abilities, Integer charges, Integer maxCharges,
                      DepletionPolicy onDepletion, boolean durabilityBar, DropSources drops,
-                     LootInjection loot) {
+                     LootInjection loot, Map<String, String> stats) {
         this.id = id;
         this.material = material;
         this.itemModel = itemModel;
@@ -53,6 +58,7 @@ public final class ItemDraft {
         this.durabilityBar = durabilityBar;
         this.drops = drops;
         this.loot = loot;
+        this.stats = stats == null ? new LinkedHashMap<>() : new LinkedHashMap<>(stats);
     }
 
     public static ItemDraft hydrate(CustomItem item) {
@@ -74,7 +80,8 @@ public final class ItemDraft {
                 item.onDepletion(),
                 item.durabilityBar(),
                 item.drops(),
-                item.loot());
+                item.loot(),
+                item.stats());
     }
 
     public CustomItem toCustomItem() {
@@ -96,7 +103,8 @@ public final class ItemDraft {
                 onDepletion,
                 durabilityBar,
                 drops,
-                loot);
+                loot,
+                stats);
     }
 
     public String id() {
@@ -204,5 +212,10 @@ public final class ItemDraft {
 
     public void setLoot(LootInjection loot) {
         this.loot = loot;
+    }
+
+    /** Initial stat values, carried through the round-trip unchanged (not GUI-editable yet). */
+    public Map<String, String> stats() {
+        return stats;
     }
 }

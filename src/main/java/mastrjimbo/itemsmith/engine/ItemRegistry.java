@@ -60,6 +60,42 @@ public final class ItemRegistry {
         return def != null && builder.decrementCharges(stack, by, def);
     }
 
+    // --- Persistent stats — thin delegators so components use ctx.registry() ---
+
+    /** A stat's current value on a stack, or "" if unset. */
+    public String getStat(ItemStack stack, String name) {
+        return builder.getStat(stack, name);
+    }
+
+    /** Reads a stat as a number, or {@code fallback} if it's unset or non-numeric. */
+    public double getStatNumber(ItemStack stack, String name, double fallback) {
+        String v = builder.getStat(stack, name);
+        if (v == null || v.isBlank()) return fallback;
+        try {
+            return Double.parseDouble(v.trim());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    /** Writes a stat's value, re-rendering lore. No-op if the stack isn't one of ours. */
+    public void setStat(ItemStack stack, String name, String value) {
+        CustomItem def = get(idOf(stack));
+        if (def != null) builder.setStat(stack, name, value, def);
+    }
+
+    /** Adds {@code delta} to a numeric stat (non-numeric reads as 0), storing the result without a trailing {@code .0}. */
+    public void addStat(ItemStack stack, String name, double delta) {
+        setStat(stack, name, formatNumber(getStatNumber(stack, name, 0) + delta));
+    }
+
+    /** Formats a stat number: whole values without a decimal ("3"), otherwise the plain double ("2.5"). */
+    public static String formatNumber(double value) {
+        return value == Math.rint(value) && !Double.isInfinite(value)
+                ? Long.toString((long) value)
+                : Double.toString(value);
+    }
+
     public CustomItem get(String id) {
         return items.get(id);
     }
