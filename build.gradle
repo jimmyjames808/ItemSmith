@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'mastrjimbo'
-version = '1.0.2'
+version = '1.0.3'
 
 base {
     // Clean artifact name so the jar isn't affected by spaces in the project folder.
