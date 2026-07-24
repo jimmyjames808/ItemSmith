@@ -18,6 +18,10 @@ public final class PullAction implements Action {
     public static final String ID = "pull";
 
     private static final ParamSchema SCHEMA = ParamSchema.builder()
+            .add(ParamDef.of("lift", ParamType.DOUBLE, 0.0)
+                    .label("Lift").desc("Upward velocity added to the pull. The pull itself is purely "
+                            + "horizontal, so a grounded target is braked by friction almost at once; "
+                            + "a little lift pops them off the ground so the yank actually reads."))
             .add(ParamDef.of("strength", ParamType.DOUBLE, 1.0)
                     .label("Strength").min(0).desc("Horizontal pull strength."))
             .build();
@@ -39,6 +43,7 @@ public final class PullAction implements Action {
         dir.setY(0);
         if (dir.lengthSquared() < 1.0e-6) return;
         dir.normalize().multiply(strength);
+        dir.setY(params.getDouble("lift", 0.0));
         entity.setVelocity(entity.getVelocity().add(dir));
     }
 }

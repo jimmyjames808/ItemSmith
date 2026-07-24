@@ -50,7 +50,7 @@ Damage, healing, status and crowd-control on the target.
 | `absorption` | Grants golden-apple-style absorption hearts. | `amount`, `duration` |
 | `lifesteal` | Heals the caster for a share of damage dealt. | `fraction` |
 | `knockback` | Pushes the target away from the caster. | `strength`, `lift` |
-| `pull` | Pulls the target toward the caster. | `strength` |
+| `pull` | Pulls the target toward the caster. `lift` adds upward velocity so a grounded target isn't braked to a stop by friction. | `strength`, `lift` |
 | `launch_entity` | Launches the target upward and/or forward. | `up`, `forward` |
 | `ignite` | Sets the target on fire. | `seconds` |
 | `extinguish` | Puts out fire on the target. | — |
@@ -168,6 +168,9 @@ Moving, dashing, and reorienting the caster (or, for a few, the target).
 | `leap` | Launches the caster toward the target in an arc. | `power` |
 | `jump` | Adds upward velocity to the caster. | `strength` |
 | `propel` | Pushes the target along the caster's look direction. | `strength` |
+| `pull_self` | Flings the **caster** toward the target's location, in one impulse. | `strength`, `arc`, `max_distance`, `min_distance` |
+| `grapple` | Grappling hook: throws a hook to the target, then reels — the caster to a block, or a creature to the caster — holding the rope and hook for the whole trip. | `strength`, `launch_speed`, `arc`, `arrive_distance`, `max_ticks`, `tip_model`, `particle`, `points` |
+| `implode` | Yanks the target toward a centre (the trigger point or the caster). The inward counterpart of `pull`. | `strength`, `lift`, `center`, `min_distance` |
 | `velocity` | Sets or adds to the caster's velocity. | `x`, `y`, `z`, `add` |
 | `firework_boost` | Boosts the caster forward, elytra-style. | `strength` |
 | `teleport` | Teleports the caster to the target's location. | — |

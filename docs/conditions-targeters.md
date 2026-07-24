@@ -216,6 +216,8 @@ versa — so match the targeter to the actions.
 | `nearest_player` | The single closest other player within a radius. | `radius` |
 | `looking_at_entity` | The entity the caster is directly looking at. | `range` |
 | `looking_at_block` | The block the caster is directly looking at. | `range` |
+| `looking_at` | The entity in the caster's crosshair if there is one, else the block behind it. Picks exactly one, so a single ability can behave differently for a mob vs a block. | `range` |
+| `entities_near_target` | Living entities around the **trigger's target** (e.g. a projectile's impact point), not the caster. The other area targeters all centre on the caster. | `radius`, `max`, `include_self` |
 | `looking_direction` | A point a set distance ahead of the caster's eyes. | `distance` |
 | `cone` | Entities in a cone in front of the caster. | `range`, `angle`, `living_only` |
 | `line` | Points sampled along the caster's line of sight. | `distance`, `step` |
