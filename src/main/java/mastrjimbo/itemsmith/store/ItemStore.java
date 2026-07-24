@@ -90,11 +90,17 @@ public final class ItemStore {
      * separately by the caller via {@code ItemSmith.reload()}.
      */
     public void save(CustomItem item) throws IOException {
+        // The id becomes a filename, so re-validate it here too (callers already do) — a stray
+        // '../' or slash must never let a write escape the items folder.
+        String id = item.id();
+        if (id == null || !id.matches("[a-z0-9_]+")) {
+            throw new IOException("Refusing to save item with invalid id '" + id + "' (use only a-z, 0-9, _).");
+        }
         if (!itemsDir.isDirectory() && !itemsDir.mkdirs()) {
             throw new IOException("Could not create items folder at " + itemsDir);
         }
-        File target = new File(itemsDir, item.id() + ".yml");
-        File temp = new File(itemsDir, item.id() + ".yml.tmp");
+        File target = new File(itemsDir, id + ".yml");
+        File temp = new File(itemsDir, id + ".yml.tmp");
         serializer.serialize(item).save(temp);
         try {
             Files.move(temp.toPath(), target.toPath(),

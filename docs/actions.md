@@ -64,6 +64,7 @@ Damage, healing, status and crowd-control on the target.
 | `strike_lightning` | Calls lightning on the target (or a cosmetic flash). | `damage`, `damage_caster` |
 | `explosion` | Creates an explosion at the target. | `power`, `fire`, `break_blocks` |
 | `shoot_projectile` | Fires a flying head-on-armour-stand projectile that damages the first thing it hits, then can trigger the item's projectile-hit abilities. | `head`, `speed`, `range`, `damage`, `hit_radius`, `particle`, `gravity`, `trail_head`, `trail_head_owner` |
+| `throw_item` | Throws **this item** as a boomerang: it flies out rendering the item's own model, strikes the first living entity it passes, then homes back to the caster and vanishes. | `speed`, `range`, `damage`, `hit_radius`, `spin`, `face`, `pivot`, `particle` |
 
 ```yaml
 # On-hit lifesteal vampire blade
@@ -110,6 +111,39 @@ can run a whole ability on whatever it strikes.
       duration: 5
 ```
 
+### `throw_item` — a returning, model-accurate boomerang
+
+Where `shoot_projectile` throws a *head*, `throw_item` throws **the item itself**. It spawns an item display
+carrying a copy of the held stack, so whatever `item-model` the item uses is what flies through the air. It
+travels out along your look direction, damages the first living entity within `hit_radius`, then turns and
+homes in on wherever you are *now* before vanishing. It cleans itself up on logout, death, or after a hard
+tick cap, and its damage is tagged so it can't re-trigger the item's own hit abilities.
+
+Two params depend on **how the model was built**, not on the effect you want:
+
+- **`face`** — which model axis is pointed along the direction of travel (`+x`, `-x`, `+y`, `-y`, `+z`, `-z`).
+  A model's "forward" is whatever the modeller made it; if your item flies handle-first or sideways, change
+  this. Try `+y` and `-y` first. Because the aim is derived from the direction of travel, the item
+  automatically turns to face you on the return leg.
+- **`pivot`** — blocks along the model's Y axis to its visual centre. Displays rotate about the entity
+  origin, so a model whose geometry sits off-origin will visibly *orbit* that point instead of spinning in
+  place. Set this to the offset to spin cleanly. Leave at `0` for centred models.
+
+```yaml
+# Mjolnir — throw it, strike something, catch it on the way back.
+- activator: right_click
+  targeter: self          # a right-click launcher must target self (there's no event target)
+  cooldown: 6.0
+  actions:
+    - type: throw_item
+      face: '+y'          # this model's head points along +y
+      speed: 0.7
+      range: 20
+      damage: 10
+      hit_radius: 1.6
+      particle: electric_spark
+```
+
 ---
 
 ## Movement
@@ -140,6 +174,7 @@ Moving, dashing, and reorienting the caster (or, for a few, the target).
 | `set_yaw` | Sets the caster's yaw. | `yaw` |
 | `set_pitch` | Sets the caster's pitch. | `pitch` |
 | `spin` | Spins the caster's yaw cosmetically. | `degrees`, `steps` |
+| `spin_target` | Spins the **target's** yaw cosmetically. Reads well on mobs; a player's client owns its own camera, so forcing another player's yaw looks jittery. | `degrees`, `steps` |
 
 ```yaml
 # Ender-pearl style blink on sneak-right-click
@@ -272,6 +307,13 @@ Run commands, broadcast, tag, set variables, cancel the event.
 
 > Command actions support the `{player}` and `{item}` placeholders (the caster's name and the
 > item id). No leading slash on `command`.
+
+> **`{player}` and unusual names.** A command using `{player}` is skipped if the caster's name isn't a
+> plain `A-Z a-z 0-9 _` token. On online-mode servers every name already qualifies, so nothing changes.
+> On offline-mode or Bedrock-via-Floodgate servers a player picks their own name, and a name containing
+> spaces or punctuation spliced into a dispatched command could inject extra arguments — so the action
+> refuses to run rather than dispatch something unintended. Commands that don't use `{player}` are
+> unaffected.
 
 ```yaml
 # A "recall" wand that sends you home

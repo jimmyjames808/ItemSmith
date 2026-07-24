@@ -30,10 +30,8 @@ public final class RunCommandConsoleAction implements Action {
 
     @Override
     public void run(AbilityContext ctx, Object target, ParamValues params) {
-        String cmd = params.getString("command", "")
-                .replace("{player}", ctx.player().getName())
-                .replace("{item}", ctx.itemId());
-        if (cmd.isBlank()) return;
+        String cmd = CommandSupport.resolve(ctx, params.getString("command", ""));
+        if (cmd == null) return;
         ctx.plugin().getServer().dispatchCommand(ctx.plugin().getServer().getConsoleSender(), cmd);
     }
 }
