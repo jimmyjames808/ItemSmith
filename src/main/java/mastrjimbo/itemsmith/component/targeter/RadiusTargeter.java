@@ -6,6 +6,7 @@ import mastrjimbo.itemsmith.param.ParamDef;
 import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.util.Targets;
 import mastrjimbo.itemsmith.registry.Categories;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -26,6 +27,9 @@ public final class RadiusTargeter implements Targeter {
                     .label("Living only").desc("Only include living entities (mobs/players)."))
             .add(ParamDef.of("include_self", ParamType.BOOLEAN, false)
                     .label("Include self").desc("Also affect the caster."))
+            .add(ParamDef.of("relative_to", ParamType.ENUM, "self")
+                    .label("Relative to").options("self", "target")
+                    .desc("Center point: the caster (self) or the trigger's target (e.g. an impact point)."))
             .build();
 
     @Override
@@ -59,7 +63,8 @@ public final class RadiusTargeter implements Targeter {
         boolean livingOnly = params.getBool("living_only", true);
         boolean includeSelf = params.getBool("include_self", false);
 
-        Location center = ctx.player().getLocation();
+        Location center = Targets.center(ctx, params);
+        if (center == null) return List.of();
         if (center.getWorld() == null) return List.of();
 
         List<Object> out = new ArrayList<>();

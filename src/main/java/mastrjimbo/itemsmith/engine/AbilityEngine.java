@@ -76,6 +76,7 @@ public final class AbilityEngine {
             for (int i = 0; i < abilities.size(); i++) {
                 Ability ability = abilities.get(i);
                 if (!ability.activatorId().equals(activatorId)) continue;
+                final int abilityIndex = i; // captured for the deferred FINE log below
 
                 // Per-ability cooldown gate: each ability has its own native cooldown group key, so
                 // abilities on the same item are throttled independently and per-player.
@@ -92,10 +93,19 @@ public final class AbilityEngine {
                     gates.notifyDenied(ability.gate(), ctx, check); // optional deny message; silent by default
                     continue;                                        // ability skipped, nothing consumed
                 }
+                // Resolve targets BEFORE committing anything: an ability whose targeter finds no one
+                // must not consume cost or start its cooldown. Charging for a no-op is undiagnosable
+                // ("nothing happened but it's on cooldown"), so treat empty as "did not fire".
+                List<Object> targets = resolveTargets(ability, ctx);
+                if (targets.isEmpty()) {
+                    logger.log(Level.FINE, () -> "Ability #" + abilityIndex + " on '" + ctx.itemId()
+                            + "' resolved no targets; skipped (no cost, no cooldown).");
+                    continue;
+                }
+
                 // ...then commit every cost/charge/group-cooldown now, at start (async-safe).
                 gates.commit(ability.gate(), ctx);
 
-                List<Object> targets = resolveTargets(ability, ctx);
                 for (Object target : targets) {
                     // The executor runs the action tree (leaf actions + delay/repeat/if/random flow).
                     // It may finish asynchronously (delays), but the ability has "fired" now.

@@ -20,8 +20,8 @@ import java.util.Locale;
  *
  * <p>Complements {@code pull}, which drags the target toward the <em>caster</em>. This pulls toward
  * a chosen centre: {@code trigger} (the event's target, e.g. where a projectile landed) or
- * {@code caster}. Paired with {@code entities_near_target} and a {@code trigger} centre, a single
- * ability sucks a whole crowd into an impact point.
+ * {@code caster}. Paired with an area targeter centred on the impact ({@code radius} with
+ * {@code relative_to: target}), a single ability sucks a whole crowd into an impact point.
  *
  * <p>{@code lift} adds an upward component so grounded targets pop off the floor rather than being
  * braked to a stop by friction, and {@code min_distance} keeps something already at the centre from

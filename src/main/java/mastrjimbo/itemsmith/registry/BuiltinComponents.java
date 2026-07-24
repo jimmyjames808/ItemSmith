@@ -215,7 +215,6 @@ import mastrjimbo.itemsmith.component.targeter.LocationOfSelfTargeter;
 import mastrjimbo.itemsmith.component.targeter.LocationOfTargetTargeter;
 import mastrjimbo.itemsmith.component.targeter.LookingAtBlockTargeter;
 import mastrjimbo.itemsmith.component.targeter.LookingAtTargeter;
-import mastrjimbo.itemsmith.component.targeter.EntitiesNearTargetTargeter;
 import mastrjimbo.itemsmith.component.targeter.LookingAtEntityTargeter;
 import mastrjimbo.itemsmith.component.targeter.LookingDirectionTargeter;
 import mastrjimbo.itemsmith.component.targeter.NearbyEntitiesTargeter;
@@ -439,7 +438,6 @@ public final class BuiltinComponents {
         r.register(new LocationOfTargetTargeter());
         r.register(new LookingAtBlockTargeter());
         r.register(new LookingAtTargeter());
-        r.register(new EntitiesNearTargetTargeter());
         r.register(new LookingAtEntityTargeter());
         r.register(new LookingDirectionTargeter());
         r.register(new NearbyEntitiesTargeter());

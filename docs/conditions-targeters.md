@@ -208,16 +208,15 @@ versa — so match the targeter to the actions.
 |---|---|---|
 | `target` | The trigger's natural target (the mob you hit, the block you broke). Empty for air clicks. | — |
 | `self` | The caster (the holding player). | — |
-| `radius` | All entities within a radius of the caster. | `radius`, `living_only`, `include_self` |
-| `nearby_entities` | All entities within a radius, up to a max. | `radius`, `max` |
-| `nearby_players` | All other players within a radius. | `radius` |
-| `nearby_monsters` | All hostile monsters within a radius. | `radius` |
-| `nearest_entity` | The single closest entity within a radius. | `radius`, `living_only` |
-| `nearest_player` | The single closest other player within a radius. | `radius` |
+| `radius` | All entities within a radius of the centre. | `radius`, `living_only`, `include_self`, `relative_to` |
+| `nearby_entities` | All entities within a radius, up to a max. | `radius`, `max`, `relative_to` |
+| `nearby_players` | All other players within a radius. | `radius`, `relative_to` |
+| `nearby_monsters` | All hostile monsters within a radius. | `radius`, `relative_to` |
+| `nearest_entity` | The single closest entity within a radius. | `radius`, `living_only`, `relative_to` |
+| `nearest_player` | The single closest other player within a radius. | `radius`, `relative_to` |
 | `looking_at_entity` | The entity the caster is directly looking at. | `range` |
 | `looking_at_block` | The block the caster is directly looking at. | `range` |
 | `looking_at` | The entity in the caster's crosshair if there is one, else the block behind it. Picks exactly one, so a single ability can behave differently for a mob vs a block. | `range` |
-| `entities_near_target` | Living entities around the **trigger's target** (e.g. a projectile's impact point), not the caster. The other area targeters all centre on the caster. | `radius`, `max`, `include_self` |
 | `looking_direction` | A point a set distance ahead of the caster's eyes. | `distance` |
 | `cone` | Entities in a cone in front of the caster. | `range`, `angle`, `living_only` |
 | `line` | Points sampled along the caster's line of sight. | `distance`, `step` |
@@ -226,6 +225,12 @@ versa — so match the targeter to the actions.
 | `location_of_self` | The caster's own location. | — |
 | `location_of_target` | The location of the trigger's natural target. | — |
 | `block_below_target` | The block directly beneath the target (or the caster). | — |
+
+> **`relative_to: self | target`** — the area and ring/offset targeters take this. `self` (the
+> default) centres on the caster; `target` centres on the trigger's target — the mob you hit, the
+> block a projectile struck, etc. Use `target` for anything that should affect the area around an
+> *impact* rather than around the thrower. When the trigger had no target (e.g. an air click), a
+> `target`-relative targeter returns nothing.
 
 ### Examples
 

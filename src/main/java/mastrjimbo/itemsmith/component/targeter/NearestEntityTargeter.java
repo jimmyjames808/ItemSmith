@@ -6,6 +6,7 @@ import mastrjimbo.itemsmith.param.ParamDef;
 import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.util.Targets;
 import mastrjimbo.itemsmith.registry.Categories;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -23,6 +24,9 @@ public final class NearestEntityTargeter implements Targeter {
                     .label("Radius").min(0).desc("How far around the caster to search."))
             .add(ParamDef.of("living_only", ParamType.BOOLEAN, true)
                     .label("Living only").desc("Only consider living entities (mobs/players)."))
+            .add(ParamDef.of("relative_to", ParamType.ENUM, "self")
+                    .label("Relative to").options("self", "target")
+                    .desc("Center point: the caster (self) or the trigger's target (e.g. an impact point)."))
             .build();
 
     @Override
@@ -55,7 +59,8 @@ public final class NearestEntityTargeter implements Targeter {
         double radius = params.getDouble("radius", 20.0);
         boolean livingOnly = params.getBool("living_only", true);
 
-        Location center = ctx.player().getLocation();
+        Location center = Targets.center(ctx, params);
+        if (center == null) return List.of();
         if (center.getWorld() == null) return List.of();
 
         Entity closest = null;

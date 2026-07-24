@@ -59,10 +59,11 @@ Work down the pipeline:
    [`invert`](conditions-targeters.md#the-invert-flag) flag isn't backwards.
 3. **Targeter** — did it resolve anyone? An area targeter with too small a `radius`, or
    `looking_at_entity` not aimed at a mob, yields **no targets**, so the actions never run.
-   > **The tell:** actions run once *per resolved target*, but the cooldown is applied whether or
-   > not any resolved. So an ability with zero targets looks like "nothing happens except the
-   > cooldown starts" — no message, no sound, no console warning. If you see exactly that, suspect
-   > the targeter first, and try `targeter: self` to confirm.
+   > **The tell:** an ability whose targeter resolves nobody now **does nothing at all** — its
+   > actions don't run, and (as of the targeter-honouring change) it **no longer consumes cost or
+   > starts its cooldown** either, so you can retry immediately. If you're chasing why an ability
+   > silently no-ops, suspect the targeter first and try `targeter: self` to confirm. Raise the
+   > server log level to `FINE` to see a "resolved no targets; skipped" line for each such miss.
 4. **Gate** — a [gate](gates.md) denial is **silent by default**. Add a
    `deny-message: "<red><reason></red>"` to see *why* (permission, region, cooldown, charges,
    money, xp, hunger, items).

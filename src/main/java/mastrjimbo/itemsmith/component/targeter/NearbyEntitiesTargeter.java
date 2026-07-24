@@ -6,6 +6,7 @@ import mastrjimbo.itemsmith.param.ParamDef;
 import mastrjimbo.itemsmith.param.ParamSchema;
 import mastrjimbo.itemsmith.param.ParamType;
 import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.util.Targets;
 import mastrjimbo.itemsmith.registry.Categories;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -23,6 +24,9 @@ public final class NearbyEntitiesTargeter implements Targeter {
                     .label("Radius").min(0).desc("How far around the caster to reach."))
             .add(ParamDef.of("max", ParamType.INT, 0)
                     .label("Max targets").min(0).desc("Cap on how many entities to return (0 = unlimited)."))
+            .add(ParamDef.of("relative_to", ParamType.ENUM, "self")
+                    .label("Relative to").options("self", "target")
+                    .desc("Center point: the caster (self) or the trigger's target (e.g. an impact point)."))
             .build();
 
     @Override
@@ -55,7 +59,8 @@ public final class NearbyEntitiesTargeter implements Targeter {
         double radius = params.getDouble("radius", 5.0);
         int max = params.getInt("max", 0);
 
-        Location center = ctx.player().getLocation();
+        Location center = Targets.center(ctx, params);
+        if (center == null) return List.of();
         if (center.getWorld() == null) return List.of();
 
         List<Object> out = new ArrayList<>();
