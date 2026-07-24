@@ -37,6 +37,6 @@ public final class SetStatAction implements Action {
         if (stack == null) return;
         String name = params.getString("name", "stat").trim();
         if (name.isEmpty()) return;
-        ctx.registry().setStat(stack, name, params.getString("value", ""));
+        StatHooks.mutate(ctx, stack, name, () -> ctx.registry().setStat(stack, name, params.getString("value", "")));
     }
 }

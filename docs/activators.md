@@ -254,6 +254,32 @@ conditions.
 | `inventory_tick` | Repeatedly while the item is anywhere in your inventory. |
 | `equip_tick` | Repeatedly while the item is worn as armor. |
 
+## Stats — threshold hook
+
+<a id="stat_reached"></a>Unlike every other activator, `stat_reached` isn't backed by a Bukkit
+event — it fires when a `set_stat` / `add_stat` action makes a [stat](yaml-reference.md#stats) **rise
+across** a threshold, and it fires **once** per crossing (not every use afterward). Its params sit
+flat on the ability, like `cooldown`:
+
+| id | Fires | Params |
+|---|---|---|
+| `stat_reached` | the tick `stat` rises from below `value` to ≥ `value` | `stat`, `value` |
+
+```yaml
+# Announce the evolution exactly once, when 'level' first reaches 3.
+- activator: stat_reached
+  stat: level
+  value: 3
+  targeter: self
+  actions:
+    - type: send_title
+      title: "<gold>Evolved!</gold>"
+```
+
+The hook runs on the **next tick** after the stat change (so it's safe to trigger from inside another
+ability), and it reads the stack's item, so it works on hit/click/tick-driven items but not where
+there's no item stack.
+
 ---
 
 ## Tips

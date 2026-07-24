@@ -29,4 +29,15 @@ public record ActionNode(
     /** One weighted branch of a {@code random} node: a relative weight and the actions to run if chosen. */
     public record Branch(double weight, List<ActionNode> body) {
     }
+
+    /**
+     * Returns a copy of this node with its top-level {@code params} stat-resolved against
+     * {@code ctx} (see {@link ParamValues#resolve}). Nested {@code conditions}/{@code bodies}
+     * are left untouched — they resolve themselves when they run (each through its own
+     * {@code Conditions}/{@code ActionExecutor} pass). Returns {@code this} when nothing changed.
+     */
+    public ActionNode resolved(AbilityContext ctx) {
+        ParamValues r = params.resolve(ctx);
+        return r == params ? this : new ActionNode(definition, r, conditions, bodies, branches);
+    }
 }

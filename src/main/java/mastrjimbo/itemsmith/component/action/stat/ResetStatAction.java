@@ -10,25 +10,24 @@ import mastrjimbo.itemsmith.registry.Categories;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Adds to a numeric persistent stat on the trigger item (a non-numeric or unset stat counts as 0).
- * The classic "level up / count a kill / heat up" primitive; pass a negative amount to subtract.
- * No-op if the ability has no item stack.
+ * Resets a persistent stat on the trigger item back to the value the item definition declares for it
+ * (or "0" if the definition declares none) — the "clear the counter / cool it down / respec" primitive
+ * that undoes any accumulated {@code add_stat}/{@code multiply_stat} changes. No-op if the ability has
+ * no item stack.
  */
-public final class AddStatAction implements Action {
+public final class ResetStatAction implements Action {
 
-    public static final String ID = "add_stat";
+    public static final String ID = "reset_stat";
 
     private static final ParamSchema SCHEMA = ParamSchema.builder()
             .add(ParamDef.of("name", ParamType.STRING, "stat")
-                    .label("Stat").desc("Which stat to change (a-z, 0-9, _)."))
-            .add(ParamDef.of("amount", ParamType.DOUBLE, 1.0)
-                    .label("Amount").desc("How much to add (negative subtracts)."))
+                    .label("Stat").desc("Which stat to reset to its declared initial value."))
             .build();
 
     @Override public String id() { return ID; }
     @Override public String category() { return Categories.ITEM; }
-    @Override public String displayName() { return "Add Stat"; }
-    @Override public String description() { return "Adds to a numeric stat on the trigger item."; }
+    @Override public String displayName() { return "Reset Stat"; }
+    @Override public String description() { return "Resets a stat on the trigger item to its declared initial value."; }
     @Override public ParamSchema schema() { return SCHEMA; }
 
     @Override
@@ -37,6 +36,6 @@ public final class AddStatAction implements Action {
         if (stack == null) return;
         String name = params.getString("name", "stat").trim();
         if (name.isEmpty()) return;
-        StatHooks.mutate(ctx, stack, name, () -> ctx.registry().addStat(stack, name, params.getDouble("amount", 1.0)));
+        StatHooks.mutate(ctx, stack, name, () -> ctx.registry().resetStat(stack, name));
     }
 }

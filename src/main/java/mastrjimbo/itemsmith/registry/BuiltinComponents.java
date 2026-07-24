@@ -1,6 +1,7 @@
 package mastrjimbo.itemsmith.registry;
 
 import mastrjimbo.itemsmith.component.action.AddDamageAction;
+import mastrjimbo.itemsmith.component.activator.StatReachedActivator;
 import mastrjimbo.itemsmith.component.action.ConsoleLogAction;
 import mastrjimbo.itemsmith.component.action.MessageAction;
 import mastrjimbo.itemsmith.component.action.PotionEffectAction;
@@ -8,6 +9,8 @@ import mastrjimbo.itemsmith.component.action.PotionEffectAction;
 import mastrjimbo.itemsmith.component.action.charges.AddChargesAction;
 import mastrjimbo.itemsmith.component.action.charges.SetChargesAction;
 import mastrjimbo.itemsmith.component.action.stat.AddStatAction;
+import mastrjimbo.itemsmith.component.action.stat.MultiplyStatAction;
+import mastrjimbo.itemsmith.component.action.stat.ResetStatAction;
 import mastrjimbo.itemsmith.component.action.stat.SetStatAction;
 import mastrjimbo.itemsmith.component.action.cooldown.SetCooldownAction;
 import mastrjimbo.itemsmith.component.action.economy.GiveMoneyAction;
@@ -18,6 +21,7 @@ import mastrjimbo.itemsmith.component.action.player.*;
 import mastrjimbo.itemsmith.component.condition.charges.ChargesAboveCondition;
 import mastrjimbo.itemsmith.component.condition.stat.StatAboveCondition;
 import mastrjimbo.itemsmith.component.condition.stat.StatBelowCondition;
+import mastrjimbo.itemsmith.component.condition.stat.StatBetweenCondition;
 import mastrjimbo.itemsmith.component.condition.stat.StatEqualsCondition;
 import mastrjimbo.itemsmith.component.condition.charges.ChargesBelowCondition;
 import mastrjimbo.itemsmith.component.condition.cooldown.CooldownReadyCondition;
@@ -433,6 +437,10 @@ public final class BuiltinComponents {
         act(r, HOLD_TICK, Categories.LIFECYCLE, "While Held (tick)", "Repeatedly while the item is in your main hand.");
         act(r, INVENTORY_TICK, Categories.LIFECYCLE, "While Carried (tick)", "Repeatedly while the item is anywhere in your inventory.");
         act(r, EQUIP_TICK, Categories.LIFECYCLE, "While Worn (tick)", "Repeatedly while the item is worn as armor.");
+
+        // Stats (threshold hook) — parameterised, so a dedicated activator class rather than act(...).
+        // Not backed by a listener: set_stat/add_stat fire it when a stat rises across the `value`.
+        r.register(new StatReachedActivator());
     }
 
     private static void registerTargeters(Registries r) {
@@ -533,6 +541,7 @@ public final class BuiltinComponents {
         r.register(new ChargesAboveCondition());
         r.register(new StatAboveCondition());
         r.register(new StatBelowCondition());
+        r.register(new StatBetweenCondition());
         r.register(new StatEqualsCondition());
         r.register(new ChargesBelowCondition());
         r.register(new CooldownReadyCondition());
@@ -730,6 +739,8 @@ public final class BuiltinComponents {
         r.register(new SetChargesAction());
         r.register(new SetStatAction());
         r.register(new AddStatAction());
+        r.register(new MultiplyStatAction());
+        r.register(new ResetStatAction());
         r.register(new SetCooldownAction());
     }
 

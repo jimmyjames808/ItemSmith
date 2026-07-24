@@ -116,6 +116,7 @@ read a non-numeric/unset stat as 0; `stat_equals` compares as text (so it also h
 |---|---|---|
 | `stat_above` | a numeric stat is greater than `amount` | `name`, `amount` |
 | `stat_below` | a numeric stat is less than `amount` | `name`, `amount` |
+| `stat_between` | a numeric stat is within `min`..`max` (inclusive) | `name`, `min`, `max` |
 | `stat_equals` | a stat equals `value` (text compare) | `name`, `value` |
 
 ### Economy (needs [Vault](integrations.md#vault))

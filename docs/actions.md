@@ -414,6 +414,8 @@ Money (needs [Vault + economy](integrations.md#vault)), item charges, and named 
 | `set_cooldown` | Starts a named cooldown on the caster. | `key`, `seconds` |
 | `set_stat` | Sets a persistent [stat](yaml-reference.md#stats) on the trigger item (number or text). | `name`, `value` |
 | `add_stat` | Adds to a numeric stat on the trigger item (negative subtracts). | `name`, `amount` |
+| `multiply_stat` | Multiplies a numeric stat by a factor. | `name`, `factor` |
+| `reset_stat` | Resets a stat to its declared initial value. | `name` |
 
 See [Gates → Charges](gates.md#charges) and [Gates → Cooldowns](gates.md#cooldowns) for how
 charges and named cooldowns interact with the gate.
@@ -422,8 +424,27 @@ charges and named cooldowns interact with the gate.
 
 `stat`s are named values that live **on the individual item** and survive across uses, drops and
 restarts (declared in a [`stats:`](yaml-reference.md#stats) block). Read them with the
-`stat_above` / `stat_below` / `stat_equals` [conditions](conditions-targeters.md#stats), change them
-with `set_stat` / `add_stat`, and show them in lore with a `<stat:name>` token.
+`stat_above` / `stat_below` / `stat_equals` / `stat_between` [conditions](conditions-targeters.md#stats),
+change them with `set_stat` / `add_stat` / `multiply_stat` / `reset_stat`, and show them in lore with
+a `<stat:name>` token.
+
+**Stats can drive the numbers, not just gate abilities.** Any param may embed a `<stat:name>` token,
+resolved to the item's live value when the action runs — so effects *scale* with the item:
+
+```yaml
+- type: damage
+  amount: '<stat:power>'      # deals damage equal to the item's current 'power' stat
+- type: heal
+  amount: '<stat:level>*2'    # simple trailing scale (* / + -) is supported too
+```
+
+A token resolves to `0` when the stat is unset or the ability has no item stack (e.g.
+`projectile_hit*`), so numeric reads never throw. Tokens work in action **and** condition params (not
+in targeter/activator params).
+
+**Threshold hook.** The [`stat_reached`](activators.md#stat_reached) activator fires an ability *once*
+the tick a stat rises across a `value`, so level-up/evolution logic is written in one place instead of
+repeated across abilities.
 
 Evolution needs **no special mechanism** — because abilities already take `conditions:`, gating a
 stronger ability behind a stat threshold *is* the evolution. Count uses with `add_stat`, unlock

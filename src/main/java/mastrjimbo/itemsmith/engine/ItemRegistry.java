@@ -89,6 +89,19 @@ public final class ItemRegistry {
         setStat(stack, name, formatNumber(getStatNumber(stack, name, 0) + delta));
     }
 
+    /** Multiplies a numeric stat by {@code factor} (non-numeric reads as 0), storing the result without a trailing {@code .0}. */
+    public void multiplyStat(ItemStack stack, String name, double factor) {
+        setStat(stack, name, formatNumber(getStatNumber(stack, name, 0) * factor));
+    }
+
+    /** Resets a stat to the item definition's declared initial value ("0" if it declares none). No-op if the stack isn't one of ours. */
+    public void resetStat(ItemStack stack, String name) {
+        CustomItem def = get(idOf(stack));
+        if (def == null) return;
+        String initial = def.stats().get(name);
+        setStat(stack, name, initial != null ? initial : "0");
+    }
+
     /** Formats a stat number: whole values without a decimal ("3"), otherwise the plain double ("2.5"). */
     public static String formatNumber(double value) {
         return value == Math.rint(value) && !Double.isInfinite(value)

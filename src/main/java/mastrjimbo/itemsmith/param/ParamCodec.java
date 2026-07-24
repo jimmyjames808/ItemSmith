@@ -45,9 +45,15 @@ public final class ParamCodec {
         String key = def.key();
         switch (def.type()) {
             case INT -> {
+                // A <stat:...> token in a numeric field is kept as its raw string so it survives
+                // to runtime; ParamValues.resolve substitutes it and the typed getter parses it.
+                String raw = s.getString(key);
+                if (ParamValues.containsToken(raw)) return raw;
                 return clampInt(s.getInt(key), def);
             }
             case DOUBLE -> {
+                String raw = s.getString(key);
+                if (ParamValues.containsToken(raw)) return raw;
                 return clampDouble(s.getDouble(key), def);
             }
             case BOOLEAN -> {

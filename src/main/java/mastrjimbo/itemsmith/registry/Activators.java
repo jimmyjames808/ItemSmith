@@ -3,8 +3,10 @@ package mastrjimbo.itemsmith.registry;
 /**
  * Canonical activator ids, referenced by both the listeners (which fire them)
  * and {@link BuiltinComponents} (which registers a {@code SimpleActivator} for
- * each). Every id here is backed by a real event handler in {@code listener/} —
- * there are no metadata-only placeholders. Keeping the ids here keeps the
+ * each). Almost every id here is backed by a real event handler in
+ * {@code listener/}; the one exception is {@link #STAT_REACHED}, which is not
+ * event-driven — it is fired by the {@code set_stat}/{@code add_stat} actions the
+ * moment they push a stat across a threshold. Keeping the ids here keeps the
  * fire-site and the registration in sync.
  */
 public final class Activators {
@@ -189,6 +191,10 @@ public final class Activators {
     public static final String FISH_CATCH_ENTITY = "fish_catch_entity";
     public static final String FISH_IN_GROUND = "fish_in_ground";
     public static final String FISH_REEL = "fish_reel";
+
+    // --- Stats (threshold hook) ---
+    // Not event-driven: fired by set_stat/add_stat when a stat rises across an ability's `value`.
+    public static final String STAT_REACHED = "stat_reached";
 
     // --- Passive / timer ---
     public static final String HOLD_TICK = "hold_tick";

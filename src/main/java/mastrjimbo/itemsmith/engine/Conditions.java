@@ -25,7 +25,8 @@ public final class Conditions {
                                   AbilityContext ctx, Object target, Logger logger) {
         for (Configured<Condition> c : conditions) {
             try {
-                if (!c.definition().test(ctx, target, c.params())) return false;
+                // Resolve <stat:...> tokens against the trigger item's live stats before the check.
+                if (!c.definition().test(ctx, target, c.params().resolve(ctx))) return false;
             } catch (RuntimeException e) {
                 if (logger != null) {
                     logger.log(Level.WARNING, "Condition '" + c.definition().id() + "' on item '"

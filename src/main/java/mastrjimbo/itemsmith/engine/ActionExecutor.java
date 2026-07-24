@@ -38,9 +38,11 @@ public final class ActionExecutor {
         Action def = node.definition();
         try {
             if (def instanceof FlowAction flow) {
-                flow.execute(ctx, target, node, this, next);
+                // Resolve <stat:...> tokens in this node's own params (e.g. repeat times, chance
+                // percent); nested bodies/conditions resolve themselves as they run.
+                flow.execute(ctx, target, node.resolved(ctx), this, next);
             } else {
-                def.run(ctx, target, node.params());
+                def.run(ctx, target, node.params().resolve(ctx));
                 next.run();
             }
         } catch (RuntimeException e) {

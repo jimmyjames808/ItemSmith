@@ -35,8 +35,8 @@ public final class ItemDraft {
     private boolean durabilityBar;
     private DropSources drops;
     private LootInjection loot;
-    // Carried through the GUI round-trip unchanged (the creator can't edit stats yet), so editing an
-    // item never wipes its stats: declaration.
+    // Editable via the creator's stats screen; the map stays mutable so putStat/removeStat can add,
+    // overwrite and drop entries in place, and edits round-trip back to the saved stats: declaration.
     private final Map<String, String> stats;
 
     public ItemDraft(String id, Material material, NamespacedKey itemModel, Integer customModelData,
@@ -214,8 +214,18 @@ public final class ItemDraft {
         this.loot = loot;
     }
 
-    /** Initial stat values, carried through the round-trip unchanged (not GUI-editable yet). */
+    /** Initial stat values (name→value), edited in place by {@link #putStat} / {@link #removeStat}. */
     public Map<String, String> stats() {
         return stats;
+    }
+
+    /** Adds or overwrites the initial value of the named stat. */
+    public void putStat(String name, String value) {
+        stats.put(name, value);
+    }
+
+    /** Drops the named stat's initial-value declaration, if present. */
+    public void removeStat(String name) {
+        stats.remove(name);
     }
 }

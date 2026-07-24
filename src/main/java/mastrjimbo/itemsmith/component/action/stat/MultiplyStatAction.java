@@ -10,25 +10,25 @@ import mastrjimbo.itemsmith.registry.Categories;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Adds to a numeric persistent stat on the trigger item (a non-numeric or unset stat counts as 0).
- * The classic "level up / count a kill / heat up" primitive; pass a negative amount to subtract.
- * No-op if the ability has no item stack.
+ * Multiplies a numeric persistent stat on the trigger item by a factor (a non-numeric or unset stat
+ * counts as 0). Handy for scaling — a {@code factor} above 1 grows the stat, below 1 decays it, and
+ * a negative factor flips its sign. No-op if the ability has no item stack.
  */
-public final class AddStatAction implements Action {
+public final class MultiplyStatAction implements Action {
 
-    public static final String ID = "add_stat";
+    public static final String ID = "multiply_stat";
 
     private static final ParamSchema SCHEMA = ParamSchema.builder()
             .add(ParamDef.of("name", ParamType.STRING, "stat")
                     .label("Stat").desc("Which stat to change (a-z, 0-9, _)."))
-            .add(ParamDef.of("amount", ParamType.DOUBLE, 1.0)
-                    .label("Amount").desc("How much to add (negative subtracts)."))
+            .add(ParamDef.of("factor", ParamType.DOUBLE, 1.0)
+                    .label("Factor").desc("What to multiply the stat by."))
             .build();
 
     @Override public String id() { return ID; }
     @Override public String category() { return Categories.ITEM; }
-    @Override public String displayName() { return "Add Stat"; }
-    @Override public String description() { return "Adds to a numeric stat on the trigger item."; }
+    @Override public String displayName() { return "Multiply Stat"; }
+    @Override public String description() { return "Multiplies a numeric stat on the trigger item by a factor."; }
     @Override public ParamSchema schema() { return SCHEMA; }
 
     @Override
@@ -37,6 +37,6 @@ public final class AddStatAction implements Action {
         if (stack == null) return;
         String name = params.getString("name", "stat").trim();
         if (name.isEmpty()) return;
-        StatHooks.mutate(ctx, stack, name, () -> ctx.registry().addStat(stack, name, params.getDouble("amount", 1.0)));
+        StatHooks.mutate(ctx, stack, name, () -> ctx.registry().multiplyStat(stack, name, params.getDouble("factor", 1.0)));
     }
 }

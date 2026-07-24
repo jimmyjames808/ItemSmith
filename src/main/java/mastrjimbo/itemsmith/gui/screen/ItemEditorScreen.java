@@ -89,6 +89,11 @@ public final class ItemEditorScreen {
                                 : "<gray>charges " + draft.charges() + "/" + draft.maxCharges()),
                         Text.item("<green>Click to edit")))
                 .asGuiItem(event -> new ItemSettingsScreen(gui, session, () -> open(player)).open(player)));
+        menu.setItem(3, 7, PaperItemBuilder.from(Material.EXPERIENCE_BOTTLE)
+                .name(Text.item("<aqua>Stats"))
+                .lore(List.of(Text.item("<gray>" + draft.stats().size() + " defined"),
+                        Text.item("<green>Click to edit")))
+                .asGuiItem(event -> new StatsEditorScreen(gui, draft, () -> open(player)).open(player)));
 
         // Obtaining row: how players get this item.
         menu.setItem(4, 3, PaperItemBuilder.from(Material.CRAFTING_TABLE)

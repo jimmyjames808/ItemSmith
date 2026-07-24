@@ -2,6 +2,8 @@ package mastrjimbo.itemsmith.engine;
 
 import mastrjimbo.itemsmith.gate.GateCheck;
 import mastrjimbo.itemsmith.gate.GateEvaluator;
+import mastrjimbo.itemsmith.param.ParamValues;
+import mastrjimbo.itemsmith.registry.Activators;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -59,10 +61,54 @@ public final class AbilityEngine {
     }
 
     /**
+     * Runs the {@code stat_reached} hook for a rising crossing of {@code stat} on {@code stack}, from
+     * {@code oldValue} to {@code newValue}. Called by the {@code set_stat}/{@code add_stat} actions
+     * right after they change a stat; a no-op unless the change actually rose and some
+     * {@code stat_reached} ability's threshold sits in {@code (oldValue, newValue]}.
+     *
+     * <p><b>Re-entrancy:</b> the stat change happens <i>inside</i> an already-firing ability, so the
+     * player's uuid is in {@link #firing} and an immediate re-fire would be swallowed by the guard.
+     * We therefore defer the hook to the next server tick, when the originating ability has finished
+     * and the guard is clear. The pre/post values are captured now and carried into the deferred fire,
+     * so the one-shot crossing is decided from the values at change time — never re-read from the item
+     * (which may have changed again by next tick). This keeps the hook a clean rising-edge trigger.
+     */
+    public void fireStatReached(Player player, ItemStack stack, String stat, double oldValue, double newValue) {
+        if (stack == null || newValue <= oldValue) return; // only an upward change can cross a threshold
+        String id = registry.idOf(stack);
+        if (id == null) return;
+        CustomItem item = registry.get(id);
+        if (item == null) return;
+
+        StatCrossing crossing = new StatCrossing(stat, oldValue, newValue);
+        // Skip scheduling entirely unless at least one stat_reached ability actually matches this crossing.
+        boolean matched = false;
+        for (Ability ability : item.abilities()) {
+            if (ability.activatorId().equals(Activators.STAT_REACHED) && crossing.matches(ability.activatorParams())) {
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) return;
+
+        plugin.getServer().getScheduler().runTask(plugin, () -> fire(Activators.STAT_REACHED,
+                new AbilityContext(plugin, player, stack, id, null, null, registry), crossing));
+    }
+
+    /**
      * Fires all abilities on the context's item bound to {@code activatorId}.
      * Safe to call for any event; if the item has no matching ability it is a no-op.
      */
     public void fire(String activatorId, AbilityContext ctx) {
+        fire(activatorId, ctx, null);
+    }
+
+    /**
+     * Fires matching abilities. When {@code crossing} is non-null this is a {@code stat_reached}
+     * activation and each candidate ability is additionally filtered so only those whose
+     * {@code stat}+{@code value} params match the rising crossing run (see {@link StatCrossing}).
+     */
+    private void fire(String activatorId, AbilityContext ctx, StatCrossing crossing) {
         CustomItem item = registry.get(ctx.itemId());
         if (item == null) return;
 
@@ -76,6 +122,8 @@ public final class AbilityEngine {
             for (int i = 0; i < abilities.size(); i++) {
                 Ability ability = abilities.get(i);
                 if (!ability.activatorId().equals(activatorId)) continue;
+                // stat_reached: run only the abilities whose stat+value threshold this change crossed.
+                if (crossing != null && !crossing.matches(ability.activatorParams())) continue;
                 final int abilityIndex = i; // captured for the deferred FINE log below
 
                 // Per-ability cooldown gate: each ability has its own native cooldown group key, so
@@ -133,6 +181,20 @@ public final class AbilityEngine {
             logger.log(Level.WARNING, "Targeter '" + t.definition().id() + "' on item '"
                     + ctx.itemId() + "' threw; no targets.", e);
             return List.of();
+        }
+    }
+
+    /**
+     * A single rising stat crossing: the stat changed from {@code oldValue} to {@code newValue}. Used
+     * to select the {@code stat_reached} abilities to run — one matches when it watches this stat and
+     * its threshold sits in {@code (oldValue, newValue]}, i.e. the value was below it and is now at or
+     * above it. This is what makes the hook a once-per-crossing rising edge rather than a level check.
+     */
+    private record StatCrossing(String stat, double oldValue, double newValue) {
+        boolean matches(ParamValues activatorParams) {
+            if (!stat.equalsIgnoreCase(activatorParams.getString("stat", "stat").trim())) return false;
+            double threshold = activatorParams.getDouble("value", 0);
+            return oldValue < threshold && newValue >= threshold;
         }
     }
 
